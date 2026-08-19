@@ -1,0 +1,4165 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+
+<meta name="theme-color" content="#e8ecf4">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Мөн биш">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+
+<title>Мөн биш</title>
+
+<style>
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 25px 15px;
+
+  font-family: Arial, sans-serif;
+  text-align: center;
+
+  background: #f2f2f2;
+  color: #222;
+}
+
+
+/* =========================
+   ГАРЧИГ
+========================= */
+
+h1 {
+  margin: 10px 0 8px;
+  font-size: 34px;
+}
+
+.instruction {
+  color: #555;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+
+/* =========================
+   ДЭЭД МЭДЭЭЛЭЛ
+========================= */
+
+.top-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  gap: 35px;
+
+  margin-bottom: 28px;
+
+  font-size: 19px;
+}
+
+.time {
+  font-weight: bold;
+  font-size: 22px;
+}
+
+
+/* =========================
+   СҮҮЛИЙН 5 СЕКУНД
+========================= */
+
+#timer.timer-warning {
+  color: #d62828;
+  display: inline-block;
+  animation: timerPulse 0.55s ease;
+}
+
+@keyframes timerPulse {
+  0% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.28);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+
+/* =========================
+   ТОГЛООМЫН ҮГНҮҮД
+========================= */
+
+.game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  gap: 22px;
+
+  margin: 15px auto 30px;
+
+  width: 100%;
+  max-width: 600px;
+}
+
+
+/* ЗҮҮН ТАЛ */
+
+#left-box {
+  width: 145px;
+  height: 78px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: white;
+
+  border: 2px solid #333;
+  border-radius: 12px;
+
+  font-size: 25px;
+  font-weight: bold;
+}
+
+
+/* БАРУУН ТАЛЫН ХҮРД */
+
+#right-window {
+  position: relative;
+
+  width: 145px;
+  height: 78px;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      to bottom,
+      #050505 0%,
+      #121212 22%,
+      #4a4a4a 50%,
+      #121212 78%,
+      #050505 100%
+    );
+
+  border: 2px solid #333;
+  border-radius: 12px;
+}
+
+.wheel-word {
+  position: absolute;
+
+  width: 100%;
+  height: 100%;
+
+  left: 0;
+  top: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 25px;
+  font-weight: bold;
+}
+
+
+/* =========================
+   МӨН / БИШ
+========================= */
+
+.answer-buttons {
+  display: flex;
+  justify-content: center;
+
+  gap: 24px;
+
+  margin-bottom: 12px;
+}
+
+.answer-buttons button {
+  width: 130px;
+
+  padding: 15px 8px;
+
+  border: none;
+  border-radius: 12px;
+
+  font-size: 22px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 3px 8px rgba(0,0,0,0.18);
+}
+
+.answer-buttons button:active {
+  transform: scale(0.96);
+}
+
+#yes-button {
+  background: #d9f5dd;
+}
+
+#no-button {
+  background: #f7dada;
+}
+
+.answer-buttons button:disabled {
+  opacity: 0.4;
+}
+
+
+/* =========================
+   RESULT
+========================= */
+
+#result {
+  min-height: 42px;
+
+  font-size: 23px;
+  font-weight: bold;
+
+  margin-top: 5px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+/* =========================
+   COMBO
+========================= */
+
+#combo-box {
+  min-height: 32px;
+
+  margin-top: 2px;
+  margin-bottom: 5px;
+
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.combo-pop {
+  animation: comboPop 0.45s ease;
+}
+
+@keyframes comboPop {
+
+  0% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.25);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+
+
+
+/* =========================
+   GAME OVER
+========================= */
+
+#game-over {
+  display: none;
+
+  max-width: 340px;
+
+  margin: 25px auto 0;
+  padding: 20px;
+
+  background: white;
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 3px 12px rgba(0,0,0,0.15);
+}
+
+#game-over h2 {
+  margin-top: 0;
+}
+
+#game-over div {
+  margin: 6px 0;
+}
+
+#restart-button {
+  margin-top: 14px;
+
+  padding: 12px 28px;
+
+  border: none;
+  border-radius: 10px;
+
+  font-size: 18px;
+  font-weight: bold;
+
+  cursor: pointer;
+}
+
+
+/* =========================
+   ШИНЭ РЕКОРД
+========================= */
+
+.new-record {
+  font-size: 32px;
+
+  margin-bottom: 18px;
+
+  animation:
+    recordPop 0.6s ease;
+}
+
+@keyframes recordPop {
+
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+
+  60% {
+    transform: scale(1.15);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+
+/* =========================
+   COUNTDOWN
+========================= */
+
+.countdown-pop {
+  animation:
+    countdownPop 0.7s ease-out;
+}
+
+@keyframes countdownPop {
+
+  0% {
+    transform: scale(0.55);
+    opacity: 0;
+  }
+
+  35% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
+
+  70% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1.08);
+    opacity: 0;
+  }
+}
+
+
+/* =========================
+   TOP 5
+========================= */
+
+.top5-box {
+  margin-top: 18px;
+  padding-top: 14px;
+
+  border-top: 1px solid #ddd;
+}
+
+.top5-title {
+  font-size: 19px;
+  font-weight: bold;
+
+  margin-bottom: 10px;
+}
+
+#top5-list {
+  max-width: 210px;
+
+  margin: 0 auto;
+
+  text-align: left;
+}
+
+.top5-row {
+  display: flex;
+  align-items: center;
+
+  min-height: 30px;
+
+  padding: 3px 8px;
+
+  border-radius: 7px;
+}
+
+.top5-rank {
+  width: 34px;
+  flex-shrink: 0;
+
+  font-weight: bold;
+}
+
+.top5-score {
+  flex: 1;
+  font-weight: bold;
+}
+
+
+.top5-new {
+  margin-left: auto;
+
+  font-size: 13px;
+  font-weight: bold;
+
+  white-space: nowrap;
+}
+
+.new-top-score {
+  background: #fff3bf;
+
+  animation:
+    top5Pop 0.7s ease;
+}
+
+@keyframes top5Pop {
+
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  60% {
+    transform: scale(1.06);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+
+/* =========================
+   УТАС
+========================= */
+
+@media (max-width: 420px) {
+
+  #left-box,
+  #right-window {
+    width: 130px;
+  }
+
+  .game-container {
+    gap: 14px;
+  }
+
+  .wheel-word,
+  #left-box {
+    font-size: 22px;
+  }
+
+  .answer-buttons button {
+    width: 120px;
+  }
+
+  .top-panel {
+    gap: 25px;
+  }
+
+}
+/* =========================
+   DESKTOP ДЭЭР БОСОО ЗАЙ ХЭМНЭХ
+========================= */
+
+@media (min-width: 700px) {
+
+  body {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  h1 {
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
+
+  .instruction {
+    margin-bottom: 10px;
+  }
+
+  .top-panel {
+    margin-bottom: 14px;
+  }
+
+  .game-container {
+    margin-top: 8px;
+    margin-bottom: 16px;
+  }
+
+  .answer-buttons {
+    margin-bottom: 6px;
+  }
+
+  #result {
+    min-height: 32px;
+    margin-top: 0;
+  }
+
+  #combo-box {
+    min-height: 26px;
+    margin-top: 0;
+    margin-bottom: 2px;
+  }
+
+  .score-panel {
+    margin-top: 2px;
+  }
+
+  #game-over {
+    margin-top: 12px;
+    padding: 14px 20px;
+  }
+
+  #game-over h2 {
+    margin-bottom: 8px;
+  }
+
+  #game-over div {
+    margin: 3px 0;
+  }
+
+  .top5-box {
+    margin-top: 10px;
+    padding-top: 9px;
+  }
+
+  .top5-title {
+    margin-bottom: 5px;
+  }
+
+  .top5-row {
+    min-height: 25px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+  }
+
+  #restart-button {
+    margin-top: 8px;
+    padding-top: 9px;
+    padding-bottom: 9px;
+  }
+}
+
+.final-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 4px 18px;
+
+  max-width: 260px;
+
+  margin: 0 auto 8px;
+}
+
+#game-over .final-stats div {
+  margin: 0;
+
+  white-space: nowrap;
+
+  font-size: 15px;
+}
+
+
+/* =========================
+   MODERN APP CONTAINER — SOLID DESKTOP
+========================= */
+
+/* Solid, calm desktop canvas */
+body {
+  min-height: 100vh;
+  background: #e8ecf4;
+}
+
+.app-shell {
+  width: min(100%, 500px);
+  margin: 0 auto;
+  padding: 6px 24px 10px;
+
+  background: #ffffff;
+  border: 1px solid #dfe4ee;
+  border-radius: 22px;
+
+  box-shadow:
+    0 14px 34px rgba(39, 49, 76, 0.12),
+    0 2px 8px rgba(39, 49, 76, 0.06);
+}
+
+#restart-button {
+  background: #5b61df;
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(91, 97, 223, 0.20);
+}
+
+#restart-button:active {
+  transform: translateY(1px);
+}
+
+/* Desktop: compact vertically so the full game fits without scrolling */
+@media (min-width: 700px) {
+  body {
+    padding: 5px 18px;
+  }
+
+  .app-shell {
+    padding: 4px 22px 7px;
+    border-radius: 20px;
+  }
+
+  h1 {
+    margin: 0 0 2px;
+    font-size: 30px;
+    line-height: 1.08;
+  }
+
+  .instruction {
+    margin-bottom: 6px;
+    font-size: 15px;
+    line-height: 1.2;
+  }
+
+  .top-panel {
+    margin-bottom: 8px;
+    gap: 30px;
+    font-size: 18px;
+  }
+
+  .time {
+    font-size: 20px;
+  }
+
+  .game-container {
+    margin-top: 4px;
+    margin-bottom: 10px;
+  }
+
+  #left-box,
+  #right-window {
+    height: 70px;
+  }
+
+  #left-box,
+  .wheel-word {
+    font-size: 23px;
+  }
+
+  .answer-buttons {
+    margin-bottom: 3px;
+  }
+
+  .answer-buttons button {
+    padding: 11px 8px;
+    font-size: 20px;
+  }
+
+  #result {
+    min-height: 25px;
+    margin-top: 0;
+    font-size: 20px;
+  }
+
+  #combo-box {
+    min-height: 22px;
+    margin: 0 0 1px;
+    font-size: 18px;
+  }
+
+  .score-panel {
+    margin-top: 0;
+    font-size: 16px;
+  }
+
+  #game-over {
+    margin-top: 7px;
+    padding: 9px 16px 10px;
+    max-width: 340px;
+  }
+
+  #game-over h2 {
+    margin: 0 0 5px;
+    font-size: 21px;
+  }
+
+  #game-over div {
+    margin: 2px 0;
+  }
+
+  .final-stats {
+    gap: 2px 16px;
+    margin-bottom: 4px;
+  }
+
+  #game-over .final-stats div {
+    font-size: 14px;
+  }
+
+  .top5-box {
+    margin-top: 6px;
+    padding-top: 6px;
+  }
+
+  .top5-title {
+    margin-bottom: 2px;
+    font-size: 18px;
+  }
+
+  .top5-row {
+    min-height: 22px;
+    padding-top: 0;
+    padding-bottom: 0;
+    font-size: 15px;
+  }
+
+  #restart-button {
+    margin-top: 5px;
+    padding: 8px 24px;
+    font-size: 17px;
+  }
+}
+
+/* Phones keep a simple neutral canvas and useful width */
+@media (max-width: 520px) {
+  body {
+    padding: 8px;
+    background: #eef1f6;
+  }
+
+  .app-shell {
+    width: 100%;
+    padding: 8px 10px 12px;
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(39, 49, 76, 0.10);
+  }
+}
+
+
+/* =========================
+   TWO-COLOR FINAL LAYOUT
+   Desktop background + one white game container
+========================= */
+
+body {
+  background: #e8ecf4;
+}
+
+.app-shell {
+  background: #ffffff;
+}
+
+@media (min-width: 700px) {
+  body {
+    padding: 5px 18px;
+  }
+
+  .app-shell {
+    width: min(100%, 500px);
+    min-height: calc(100vh - 10px);
+    margin: 0 auto;
+    background: #ffffff;
+    border: 1px solid #dfe4ee;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 699px) {
+  body {
+    background: #e8ecf4;
+  }
+
+  .app-shell {
+    background: #ffffff;
+  }
+}
+
+
+.sound-toggle { width:34px; height:34px; padding:0; border:1px solid #dfe4ee; border-radius:10px; background:#fff; font-size:18px; line-height:1; cursor:pointer; box-shadow:0 2px 6px rgba(39,49,76,.08); }
+.sound-toggle:active { transform:scale(.96); }
+
+/* =========================================================
+   GALAXY A25 / MOBILE RESULT FIT V2
+   Зөвхөн тоглоом дууссан хэсгийг шахна.
+   Desktop болон тоглож байх үеийн UI-г өөрчлөхгүй.
+   ========================================================= */
+@media (max-width: 600px) {
+
+  #game-over {
+    width: calc(100% - 24px) !important;
+    max-width: 340px !important;
+
+    margin: -8px auto 0 !important;
+    padding: 11px 14px 10px !important;
+
+    border-radius: 14px !important;
+  }
+
+  #game-over-title {
+    margin: 0 0 6px !important;
+
+    font-size: 22px !important;
+    line-height: 1.08 !important;
+  }
+
+  #game-over-title.new-record,
+  .new-record {
+    margin-bottom: 6px !important;
+    font-size: 24px !important;
+    line-height: 1.05 !important;
+  }
+
+  .final-stats {
+    max-width: 250px !important;
+
+    gap: 1px 12px !important;
+
+    margin: 0 auto 5px !important;
+  }
+
+  #game-over .final-stats div {
+    margin: 0 !important;
+
+    font-size: 14px !important;
+    line-height: 1.12 !important;
+  }
+
+  .top5-box {
+    margin-top: 5px !important;
+    padding-top: 5px !important;
+  }
+
+  .top5-title {
+    margin-bottom: 2px !important;
+
+    font-size: 18px !important;
+    line-height: 1.1 !important;
+  }
+
+  #top5-list {
+    max-width: 230px !important;
+  }
+
+  .top5-row {
+    min-height: 22px !important;
+
+    padding: 0 6px !important;
+
+    font-size: 14px !important;
+    line-height: 1.1 !important;
+  }
+
+  .top5-rank {
+    width: 30px !important;
+  }
+
+  .top5-new {
+    font-size: 12px !important;
+  }
+
+  #restart-button {
+    margin-top: 6px !important;
+    margin-bottom: 0 !important;
+
+    padding: 8px 22px !important;
+
+    font-size: 16px !important;
+  }
+}
+
+
+/* =========================================================
+   GALAXY A25 / MOBILE RESULT FIT V3
+   V2 дээр нэмэлт 50–70px орчим босоо зай хэмнэнэ.
+   Дээд тоглоомын хэсэг болон desktop-д хүрэхгүй.
+   ========================================================= */
+@media (max-width: 600px) {
+  #game-over {
+    margin-top: -14px !important;
+    padding-top: 8px !important;
+    padding-bottom: 7px !important;
+  }
+
+  #game-over-title {
+    margin-bottom: 3px !important;
+    font-size: 21px !important;
+    line-height: 1 !important;
+  }
+
+  #game-over-title.new-record,
+  .new-record {
+    margin-bottom: 3px !important;
+    font-size: 22px !important;
+    line-height: 1 !important;
+  }
+
+  .final-stats {
+    gap: 0 12px !important;
+    margin-bottom: 3px !important;
+  }
+
+  #game-over .final-stats div {
+    font-size: 13px !important;
+    line-height: 1.05 !important;
+  }
+
+  .top5-box {
+    margin-top: 3px !important;
+    padding-top: 3px !important;
+  }
+
+  .top5-title {
+    margin-bottom: 0 !important;
+    font-size: 17px !important;
+    line-height: 1 !important;
+  }
+
+  #top5-list {
+    margin-top: 1px !important;
+    margin-bottom: 0 !important;
+  }
+
+  .top5-row {
+    min-height: 18px !important;
+    height: 18px !important;
+    padding: 0 6px !important;
+    margin: 0 !important;
+    font-size: 13px !important;
+    line-height: 18px !important;
+  }
+
+  .top5-rank {
+    width: 28px !important;
+  }
+
+  .top5-new {
+    font-size: 11px !important;
+    line-height: 18px !important;
+  }
+
+  #restart-button {
+    margin-top: 4px !important;
+    padding: 7px 20px !important;
+    font-size: 15px !important;
+    line-height: 1.05 !important;
+  }
+}
+
+
+/* =========================================================
+   COMBO POP ANIMATION
+   Layout-д зай нэмэхгүй.
+   ========================================================= */
+@keyframes comboPop {
+  0%   { transform: scale(1); }
+  42%  { transform: scale(1.22); }
+  72%  { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+
+.combo-pop {
+  animation: comboPop 0.34s cubic-bezier(.2,.8,.3,1);
+  transform-origin: center;
+}
+
+
+/* =========================================================
+   ДАДЛАГА / ТОГЛОХ
+   ========================================================= */
+.mode-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(35, 45, 65, 0.28);
+}
+
+.mode-card {
+  width: min(92vw, 360px);
+  padding: 22px 20px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 12px 36px rgba(0,0,0,.18);
+  text-align: center;
+}
+
+.mode-card h2 {
+  margin: 0 0 12px;
+  font-size: 25px;
+}
+
+.mode-card p {
+  margin: 0 0 18px;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.mode-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.mode-actions button,
+.practice-next {
+  min-width: 120px;
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 11px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.practice-btn {
+  background: #e8ecf4;
+  color: #222;
+}
+
+.play-btn,
+.practice-next {
+  background: #7567d9;
+  color: #fff;
+}
+
+#practice-status {
+  display: none;
+  min-height: 42px;
+  margin-top: 7px;
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.practice-next {
+  display: none;
+  margin: 8px auto 0;
+  min-width: 110px;
+}
+
+body.practice-mode #combo-box {
+  visibility: hidden;
+}
+
+@media (max-width: 600px) {
+  .mode-card {
+    padding: 19px 16px;
+  }
+  .mode-card h2 {
+    font-size: 23px;
+  }
+}
+
+
+/* =========================================================
+   ДАДЛАГЫН ? ТОВЧ
+   ========================================================= */
+.practice-help {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+
+  border: 1px solid #cfd5df;
+  border-radius: 50%;
+
+  background: #ffffff;
+  color: #333;
+
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 32px;
+
+  cursor: pointer;
+}
+
+.practice-help:active {
+  transform: scale(0.94);
+}
+
+@media (max-width: 600px) {
+  .practice-help {
+    width: 32px;
+    height: 32px;
+    line-height: 30px;
+    font-size: 17px;
+  }
+}
+
+
+/* =========================================================
+   ДАДЛАГЫН ЗААВАР
+   ========================================================= */
+.practice-instruction {
+  display: none;
+  max-width: 520px;
+  margin: 0 auto 18px;
+  padding: 10px 14px;
+
+  border: 1px solid #d8dde7;
+  border-radius: 12px;
+
+  background: #f7f8fb;
+  color: #333;
+
+  font-size: 15px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+body.practice-mode .instruction {
+  display: none;
+}
+
+body.practice-mode .practice-instruction {
+  display: block;
+}
+
+@media (max-width: 600px) {
+  .practice-instruction {
+    margin-bottom: 14px;
+    padding: 9px 12px;
+    font-size: 14px;
+  }
+}
+
+
+/* =========================================================
+   ТҮВШИН — ХЯЛБАР / ДУНД / ХЭЦҮҮ
+   ========================================================= */
+.difficulty-control {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+
+  margin: 6px auto 8px;
+}
+
+.difficulty-control button {
+  min-width: 68px;
+  padding: 5px 10px;
+
+  border: 1px solid #d3d8e1;
+  border-radius: 999px;
+
+  background: #fff;
+  color: #555;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.difficulty-control button.active {
+  background: #2f3440;
+  border-color: #2f3440;
+  color: #fff;
+}
+
+/* Дадлага дээр түвшин сонголт хэрэггүй. */
+body.practice-mode .difficulty-control {
+  display: none;
+}
+
+/* Үр дүнгийн mobile fit-ийг эвдэхгүйн тулд game-over үед нуух. */
+body.game-over-visible .difficulty-control {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .difficulty-control {
+    margin-top: 4px;
+    margin-bottom: 6px;
+    gap: 4px;
+  }
+
+  .difficulty-control button {
+    min-width: 64px;
+    padding: 4px 9px;
+    font-size: 12px;
+  }
+}
+
+
+/* =========================================================
+   RESTART / LEVEL CHANGE COUNTDOWN POLISH
+   ========================================================= */
+body.countdown-active .difficulty-control {
+  pointer-events: none;
+  opacity: 0.72;
+}
+
+/* =========================================================
+   PRE-GAME START PANEL — LEVEL + START
+   ========================================================= */
+.start-control {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto 12px;
+}
+
+#start-button {
+  min-width: 132px;
+  padding: 10px 24px;
+  border: 0;
+  border-radius: 11px;
+  background: #5b61df;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 5px 12px rgba(91,97,223,.20);
+}
+
+#start-button:active { transform: translateY(1px); }
+
+/* Тоглолт/countdown эхэлсний дараа pre-game controls харагдахгүй болно.
+   Гэхдээ зайг нь хадгална — ингэснээр layout дээш үсрэхгүй. */
+body.game-active .difficulty-control,
+body.game-active .start-control,
+body.countdown-active .difficulty-control,
+body.countdown-active .start-control {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Дадлага болон game-over дээр placeholder зай хэрэггүй. */
+body.practice-mode .start-control,
+body.game-over-visible .start-control {
+  display: none;
+}
+
+/* Pre-game үед хариултын товчнууд тоглох боломжгүй гэдгийг зөөлөн харуулна. */
+body.pre-game .answer-buttons button {
+  opacity: .4;
+}
+
+@media (max-width: 600px) {
+  .start-control { margin-bottom: 9px; }
+  #start-button {
+    min-width: 122px;
+    padding: 9px 22px;
+    font-size: 16px;
+  }
+}
+
+/* =========================================================
+   PRE-GAME SPACING V3 — Photoshop mockup-like composition
+   Only affects the waiting/start screen.
+   ========================================================= */
+@media (min-width: 700px) {
+  body.pre-game .app-shell,
+  body.countdown-active .app-shell,
+  body.game-active .app-shell {
+    padding-top: 104px;
+  }
+
+  body.pre-game .difficulty-control,
+  body.countdown-active .difficulty-control,
+  body.game-active .difficulty-control {
+    margin-top: 96px;
+    margin-bottom: 8px;
+  }
+
+  body.pre-game .start-control,
+  body.countdown-active .start-control,
+  body.game-active .start-control {
+    margin-bottom: 0;
+  }
+}
+
+@media (max-width: 699px) {
+  body.pre-game .app-shell,
+  body.countdown-active .app-shell,
+  body.game-active .app-shell {
+    padding-top: 34px;
+  }
+
+  body.pre-game .difficulty-control,
+  body.countdown-active .difficulty-control,
+  body.game-active .difficulty-control {
+    margin-top: 54px;
+  }
+}
+
+
+/* =========================================================
+   PRACTICE LAYOUT V4
+   Дадлагын цонхыг дээд ирмэгт шахахгүй, үндсэн тоглоомтой
+   ижил тайван босоо байрлалд харуулна.
+   ========================================================= */
+@media (min-width: 700px) {
+  body.practice-mode .app-shell {
+    padding-top: 82px;
+  }
+
+  body.practice-mode .practice-instruction {
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+
+  body.practice-mode .top-panel {
+    margin-bottom: 18px;
+  }
+
+  body.practice-mode .game-container {
+    margin-top: 6px;
+    margin-bottom: 10px;
+  }
+
+  body.practice-mode .answer-buttons {
+    margin-bottom: 8px;
+  }
+
+  body.practice-mode #practice-status {
+    margin-top: 48px;
+  }
+}
+
+@media (max-width: 699px) {
+  body.practice-mode .app-shell {
+    padding-top: 28px;
+  }
+
+  body.practice-mode .practice-instruction {
+    margin-bottom: 16px;
+  }
+
+  body.practice-mode .top-panel {
+    margin-bottom: 15px;
+  }
+
+  body.practice-mode #practice-status {
+    margin-top: 34px;
+  }
+}
+
+
+
+/* =========================================================
+   V5 — ДАДЛАГААС ШУУД ГАРАХ X ТОВЧ
+   ========================================================= */
+.practice-close {
+  display: none;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid #d3d8e1;
+  border-radius: 50%;
+  background: #fff;
+  color: #444;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 32px;
+  cursor: pointer;
+  box-shadow: 0 2px 7px rgba(39,49,76,.10);
+  z-index: 5;
+}
+
+.practice-close:active {
+  transform: scale(.94);
+}
+
+body.practice-mode .practice-close {
+  display: block;
+}
+
+.app-shell {
+  position: relative;
+}
+
+@media (max-width: 600px) {
+  .practice-close {
+    top: 11px;
+    right: 11px;
+    width: 32px;
+    height: 32px;
+    line-height: 30px;
+    font-size: 19px;
+  }
+}
+
+
+
+/* =========================================================
+   V6 — СТАТИСТИК
+   ========================================================= */
+.stats-toggle { width:34px; height:34px; padding:0; border:1px solid #dfe4ee; border-radius:10px; background:#fff; font-size:17px; line-height:1; cursor:pointer; box-shadow:0 2px 6px rgba(39,49,76,.08); }
+.stats-toggle:active { transform:scale(.96); }
+.stats-overlay { position:fixed; inset:0; z-index:10020; display:none; align-items:center; justify-content:center; padding:18px; background:rgba(35,45,65,.32); }
+.stats-card { position:relative; width:min(92vw,390px); max-height:88vh; overflow:auto; padding:22px 20px 20px; border-radius:18px; background:#fff; box-shadow:0 14px 40px rgba(0,0,0,.20); text-align:left; }
+.stats-card h2 { margin:0 38px 16px 0; font-size:24px; text-align:center; }
+.stats-close { position:absolute; top:12px; right:12px; width:32px; height:32px; padding:0; border:1px solid #d3d8e1; border-radius:50%; background:#fff; font-size:19px; font-weight:700; cursor:pointer; }
+.stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+.stats-item { padding:10px 11px; border:1px solid #e1e5ed; border-radius:11px; background:#f7f8fb; }
+.stats-label { display:block; color:#666; font-size:13px; margin-bottom:3px; }
+.stats-value { font-size:19px; font-weight:800; color:#252936; }
+.stats-section { margin-top:16px; padding-top:13px; border-top:1px solid #e2e5eb; }
+.stats-section-title { margin-bottom:9px; font-size:16px; font-weight:800; text-align:center; }
+.stats-levels, .stats-recent { display:grid; gap:6px; }
+.stats-row { display:flex; justify-content:space-between; align-items:center; padding:7px 10px; border-radius:9px; background:#f7f8fb; font-size:14px; }
+.stats-row b { font-size:15px; }
+.stats-empty { color:#777; text-align:center; font-size:14px; padding:7px; }
+@media (max-width:600px) { .stats-card{padding:19px 16px 17px;} .stats-grid{gap:7px;} .stats-item{padding:8px 9px;} .stats-value{font-size:18px;} }
+
+/* =========================================================
+   V7 — ACHIEVEMENTS
+   ========================================================= */
+.achievement-toast { position:fixed; left:50%; bottom:24px; z-index:10040; transform:translate(-50%,18px); width:min(88vw,340px); padding:11px 14px; border-radius:13px; background:#252936; color:#fff; box-shadow:0 10px 28px rgba(0,0,0,.22); text-align:center; font-weight:800; opacity:0; pointer-events:none; transition:opacity .22s ease, transform .22s ease; }
+.achievement-toast.show { opacity:1; transform:translate(-50%,0); }
+.achievements-summary { margin-top:16px; padding-top:13px; border-top:1px solid #e2e5eb; }
+.achievement-count { margin-bottom:9px; text-align:center; font-size:16px; font-weight:800; }
+.achievement-list { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+.achievement-item { min-height:65px; padding:8px 9px; border:1px solid #e1e5ed; border-radius:10px; background:#f7f8fb; }
+.achievement-item.locked { opacity:.48; filter:grayscale(1); }
+.achievement-name { display:block; font-size:13px; font-weight:800; margin-bottom:3px; }
+.achievement-desc { display:block; color:#666; font-size:11px; line-height:1.25; }
+@media (max-width:600px){ .achievement-list{gap:6px;} .achievement-item{padding:7px 8px; min-height:61px;} }
+
+
+/* =========================================================
+   V8 — SETTINGS
+   Дууны товч үндсэн хэсэгт хэвээр үлдэнэ.
+   ========================================================= */
+.settings-toggle { width:34px; height:34px; padding:0; border:1px solid #dfe4ee; border-radius:10px; background:#fff; font-size:17px; line-height:1; cursor:pointer; box-shadow:0 2px 6px rgba(39,49,76,.08); }
+.settings-toggle:active { transform:scale(.96); }
+.settings-overlay { position:fixed; inset:0; z-index:10030; display:none; align-items:center; justify-content:center; padding:18px; background:rgba(35,45,65,.32); }
+.settings-card { position:relative; width:min(92vw,390px); max-height:88vh; overflow:auto; padding:22px 20px 20px; border-radius:18px; background:#fff; box-shadow:0 14px 40px rgba(0,0,0,.20); text-align:left; }
+.settings-card h2 { margin:0 38px 16px 0; font-size:24px; text-align:center; }
+.settings-close { position:absolute; top:12px; right:12px; width:32px; height:32px; padding:0; border:1px solid #d3d8e1; border-radius:50%; background:#fff; font-size:19px; font-weight:700; cursor:pointer; }
+.settings-section { padding:14px 0; border-top:1px solid #e2e5eb; }
+.settings-section:first-of-type { border-top:0; padding-top:2px; }
+.settings-section-title { margin-bottom:9px; font-size:17px; font-weight:800; text-align:center; }
+.settings-help { padding:12px 13px; border:1px solid #e1e5ed; border-radius:11px; background:#f7f8fb; color:#333; font-size:14px; line-height:1.48; }
+.settings-help p { margin:0 0 8px; }
+.settings-help p:last-child { margin-bottom:0; }
+.settings-help b { color:#252936; }
+.settings-reset-note { margin:0 0 10px; color:#666; font-size:13px; line-height:1.4; text-align:center; }
+.settings-reset { display:block; width:100%; padding:11px 14px; border:1px solid #e8b9bd; border-radius:11px; background:#fff0f1; color:#a92832; font-size:15px; font-weight:800; cursor:pointer; }
+.settings-reset:active { transform:scale(.985); }
+.settings-reset-done { min-height:20px; margin-top:8px; color:#2d7a45; font-size:13px; font-weight:700; text-align:center; }
+@media (max-width:600px) {
+  .settings-card { padding:19px 16px 17px; }
+  .top-panel { gap:12px; }
+}
+
+
+
+/* =========================================================
+   V9.1 — iPHONE / iOS RESPONSIVE POLISH
+   iOS Safari + Add to Home Screen only.
+   Android / desktop layout remains unchanged.
+   ========================================================= */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 600px) {
+    html {
+      min-height: 100%;
+      background: #e8ecf4;
+    }
+
+    body {
+      min-height: 100dvh;
+      padding-top: max(8px, env(safe-area-inset-top));
+      padding-right: max(8px, env(safe-area-inset-right));
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+      padding-left: max(8px, env(safe-area-inset-left));
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    .app-shell {
+      min-height: calc(100dvh - max(8px, env(safe-area-inset-top)) - max(8px, env(safe-area-inset-bottom)));
+      height: auto;
+      padding-left: 10px;
+      padding-right: 10px;
+      overflow: visible;
+    }
+
+    /* Keep the top of the game safely visible after Start / Restart. */
+    body.pre-game .app-shell,
+    body.countdown-active .app-shell,
+    body.game-active .app-shell {
+      padding-top: 24px;
+    }
+
+    h1 {
+      margin-top: 4px;
+      margin-bottom: 7px;
+      font-size: 32px;
+      line-height: 1.08;
+    }
+
+    .instruction {
+      margin-bottom: 14px;
+      font-size: 15px;
+      line-height: 1.22;
+    }
+
+    .top-panel {
+      gap: 10px;
+      margin-bottom: 18px;
+      font-size: 17px;
+    }
+
+    .time { font-size: 20px; }
+
+    .sound-toggle,
+    .stats-toggle,
+    .settings-toggle,
+    .practice-help {
+      flex: 0 0 auto;
+    }
+
+    .game-container {
+      gap: 14px;
+      margin-top: 10px;
+      margin-bottom: 24px;
+    }
+
+    #left-box,
+    #right-window {
+      width: min(39vw, 150px);
+      height: 78px;
+    }
+
+    .answer-buttons {
+      gap: 18px;
+      margin-bottom: 8px;
+    }
+
+    .answer-buttons button {
+      width: min(35vw, 130px);
+      padding: 14px 8px;
+    }
+
+    body.pre-game .difficulty-control,
+    body.countdown-active .difficulty-control,
+    body.game-active .difficulty-control {
+      margin-top: 42px;
+    }
+
+    /* Result screen: recover vertical room on iPhone without changing A25. */
+    body.game-over-visible .app-shell {
+      padding-top: 10px;
+      padding-bottom: 8px;
+    }
+
+    body.game-over-visible h1 {
+      margin: 0 0 2px;
+      font-size: 28px;
+    }
+
+    body.game-over-visible .instruction {
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    body.game-over-visible .top-panel {
+      margin-bottom: 7px;
+    }
+
+    body.game-over-visible .game-container {
+      margin-top: 4px;
+      margin-bottom: 8px;
+    }
+
+    body.game-over-visible #left-box,
+    body.game-over-visible #right-window {
+      height: 66px;
+    }
+
+    body.game-over-visible .answer-buttons {
+      margin-bottom: 2px;
+    }
+
+    body.game-over-visible .answer-buttons button {
+      padding-top: 10px;
+      padding-bottom: 10px;
+      font-size: 19px;
+    }
+
+    body.game-over-visible #result {
+      min-height: 20px;
+      font-size: 18px;
+    }
+
+    body.game-over-visible #combo-box {
+      min-height: 20px;
+      font-size: 17px;
+    }
+
+    body.game-over-visible #game-over {
+      margin-top: -10px !important;
+    }
+
+    /* Modal cards respect the iPhone safe area and remain scrollable. */
+    .stats-overlay,
+    .settings-overlay,
+    .mode-overlay {
+      padding-top: max(14px, env(safe-area-inset-top));
+      padding-right: max(14px, env(safe-area-inset-right));
+      padding-bottom: max(14px, env(safe-area-inset-bottom));
+      padding-left: max(14px, env(safe-area-inset-left));
+    }
+
+    .stats-card,
+    .settings-card {
+      max-height: calc(100dvh - max(28px, env(safe-area-inset-top)) - max(28px, env(safe-area-inset-bottom)));
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="app-shell">
+
+<button id="practice-close" class="practice-close" type="button" onclick="exitPractice()" aria-label="Дадлага хаах">×</button>
+
+<h1>Мөн биш</h1>
+
+
+<div class="instruction">
+  Зүүн талын үгийг баруун талын
+  <b>БИЧГИЙН ӨНГӨТЭЙ</b>
+  харьцуул.
+</div>
+
+<div id="practice-instruction" class="practice-instruction">
+  <b>Дадлага:</b>
+  Зүүн талын үгийн утга баруун талын бичгийн өнгөтэй таарч байвал
+  <b>“Мөн”</b>, таарахгүй бол <b>“Биш”</b> товчийг дарна.
+</div>
+
+
+
+<!-- =========================
+     ЦАГ + BEST
+========================= -->
+
+<div class="top-panel">
+
+  <div>
+    ⏱
+    <span
+      id="timer"
+      class="time">
+      40
+    </span>
+  </div>
+
+
+  <div>
+    🏆 Шилдэг:
+    <b id="best-score">
+      0
+    </b>
+  </div>
+
+  <button id="sound-toggle" class="sound-toggle" type="button" onclick="toggleSound()" aria-label="Дуу асаах эсвэл унтраах">🔊</button>
+  <button id="stats-toggle" class="stats-toggle" type="button" onclick="openStats()" aria-label="Статистик харах">📊</button>
+  <button id="settings-toggle" class="settings-toggle" type="button" onclick="openSettings()" aria-label="Тохиргоо нээх">⚙️</button>
+
+
+  <button
+    id="practice-help"
+    class="practice-help"
+    type="button"
+    onclick="beginPractice()"
+    aria-label="Дадлага хийх">
+    ?
+  </button>
+
+</div>
+
+
+<!-- =========================
+     ҮГНҮҮД
+========================= -->
+
+<div class="game-container">
+
+  <div id="left-box">
+    Улаан
+  </div>
+
+
+  <div id="right-window">
+
+    <div
+      id="current-word"
+      class="wheel-word">
+    </div>
+
+
+    <div
+      id="next-word"
+      class="wheel-word">
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     МӨН / БИШ
+========================= -->
+
+<div class="answer-buttons">
+
+  <button
+    id="yes-button"
+    onclick="checkAnswer(true)">
+    Мөн
+  </button>
+
+
+  <button
+    id="no-button"
+    onclick="checkAnswer(false)">
+    Биш
+  </button>
+
+</div>
+
+
+<div id="result"></div>
+
+
+<div id="combo-box"></div>
+
+
+<div id="difficulty-control" class="difficulty-control" aria-label="Түвшин сонгох">
+  <button type="button" data-level="easy" onclick="setDifficulty('easy')">Хялбар</button>
+  <button type="button" data-level="medium" onclick="setDifficulty('medium')">Дунд</button>
+  <button type="button" data-level="hard" onclick="setDifficulty('hard')">Хэцүү</button>
+</div>
+
+<div id="start-control" class="start-control">
+  <button id="start-button" type="button" onclick="startGame()">Эхлэх</button>
+</div>
+
+
+<!-- =========================
+     GAME OVER
+========================= -->
+
+
+<div id="practice-status"></div>
+<button id="practice-next" class="practice-next" onclick="nextPracticeRound()">Дараах →</button>
+
+<div id="game-over">
+
+  <h2 id="game-over-title">
+    ⏱ Хугацаа дууслаа!
+  </h2>
+
+
+ <div class="final-stats">
+
+  <div>
+    Оноо:
+    <b id="final-score">0</b>
+  </div>
+
+  <div>
+    Зөв:
+    <b id="final-correct">0</b>
+  </div>
+
+  <div>
+    Буруу:
+    <b id="final-wrong">0</b>
+  </div>
+
+
+</div>
+
+
+  <div class="top5-box">
+
+    <div class="top5-title">
+      🏅 ШИЛДЭГ 5
+    </div>
+
+    <div id="top5-list"></div>
+
+  </div>
+
+
+  <button
+    id="restart-button"
+    onclick="showPreGame()">
+    Дахин тоглох
+  </button>
+
+</div>
+
+
+</div><!-- /.app-shell -->
+
+<audio id="sound-correct" preload="auto" src="sounds/correct.mp3"></audio>
+<audio id="sound-wrong" preload="auto" src="sounds/wrong.mp3"></audio>
+<audio id="sound-combo" preload="auto" src="sounds/combo.mp3"></audio>
+<audio id="sound-record" preload="auto" src="sounds/record.mp3"></audio>
+
+<script>
+
+/* =========================
+   ДУУ
+========================= */
+let soundEnabled = localStorage.getItem("monbishSoundEnabled") !== "false";
+function updateSoundButton(){ const b=document.getElementById("sound-toggle"); if(!b)return; b.textContent=soundEnabled?"🔊":"🔇"; b.title=soundEnabled?"Дуу унтраах":"Дуу асаах"; }
+function toggleSound(){ soundEnabled=!soundEnabled; localStorage.setItem("monbishSoundEnabled",String(soundEnabled)); updateSoundButton(); }
+function playSound(id){ if(!soundEnabled)return; const a=document.getElementById(id); if(!a)return; try{a.currentTime=0; const p=a.play(); if(p&&typeof p.catch==="function")p.catch(()=>{});}catch(e){} }
+
+/* =========================
+   ӨНГӨНҮҮД
+========================= */
+
+const colors = [
+  "Улаан",
+  "Ногоон",
+  "Хөх",
+  "Шар",
+  "Цагаан"
+];
+
+
+const colorValues = {
+
+  "Улаан": "#ff3030",
+
+  "Ногоон": "#39d353",
+
+  "Хөх": "#4090ff",
+
+  "Шар": "#ffe135",
+
+  "Цагаан": "#ffffff"
+
+};
+
+
+
+/* =========================
+   ТҮВШИН
+========================= */
+
+const DIFFICULTIES = {
+  easy: {
+    label: "Хялбар",
+    seconds: 60
+  },
+
+  medium: {
+    label: "Дунд",
+    seconds: 40
+  },
+
+  hard: {
+    label: "Хэцүү",
+    seconds: 30
+  }
+};
+
+let currentDifficulty =
+  localStorage.getItem(
+    "monbishDifficulty"
+  ) || "medium";
+
+if (!DIFFICULTIES[currentDifficulty]) {
+  currentDifficulty = "medium";
+}
+
+function difficultySeconds() {
+  return DIFFICULTIES[
+    currentDifficulty
+  ].seconds;
+}
+
+function top5StorageKey() {
+  return "monbishTop5Scores_" +
+    currentDifficulty;
+}
+
+function bestStorageKey() {
+  return "monbishBestComboScore_" +
+    currentDifficulty;
+}
+
+/*
+  Өмнөх нэг л Top 5 байсан хувилбарын
+  оноог Дунд түвшинд нэг удаа шилжүүлнэ.
+*/
+function migrateOldMediumScores() {
+
+  if (
+    currentDifficulty !==
+    "medium"
+  ) {
+    return;
+  }
+
+  const newTopKey =
+    top5StorageKey();
+
+  const newBestKey =
+    bestStorageKey();
+
+  if (
+    localStorage.getItem(
+      newTopKey
+    ) === null
+  ) {
+
+    const oldTop =
+      localStorage.getItem(
+        "monbishTop5Scores"
+      );
+
+    if (oldTop !== null) {
+      localStorage.setItem(
+        newTopKey,
+        oldTop
+      );
+    }
+  }
+
+  if (
+    localStorage.getItem(
+      newBestKey
+    ) === null
+  ) {
+
+    const oldBest =
+      localStorage.getItem(
+        "monbishBestComboScore"
+      );
+
+    if (oldBest !== null) {
+      localStorage.setItem(
+        newBestKey,
+        oldBest
+      );
+    }
+  }
+}
+
+migrateOldMediumScores();
+
+function updateDifficultyButtons() {
+
+  document
+    .querySelectorAll(
+      "#difficulty-control button"
+    )
+    .forEach(button => {
+
+      button.classList.toggle(
+        "active",
+        button.dataset.level ===
+          currentDifficulty
+      );
+
+    });
+}
+
+function setDifficulty(level) {
+
+  if (
+    !DIFFICULTIES[level] ||
+    practiceMode
+  ) {
+    return;
+  }
+
+  currentDifficulty =
+    level;
+
+  localStorage.setItem(
+    "monbishDifficulty",
+    currentDifficulty
+  );
+
+  migrateOldMediumScores();
+
+  /*
+    Шинэ түвшний Top 5-ыг
+    шууд уншина.
+  */
+  top5Scores =
+    loadTop5Scores();
+
+  bestScore =
+    top5Scores.length > 0
+      ? top5Scores[0]
+      : 0;
+
+  updateDifficultyButtons();
+
+  /*
+    Түвшин сонгоход тоглоом шууд эхлэхгүй.
+    Pre-game төлөвт Цаг / Шилдэг нь тоо биш “—” хэвээр байна.
+    Бодит утгууд зөвхөн Эхлэх дарсны дараа гарна.
+  */
+  showPreGame();
+}
+
+
+/* =========================
+   ТОГЛООМЫН ТӨЛӨВ
+========================= */
+
+let currentRound = null;
+
+let correctScore = 0;
+
+let wrongScore = 0;
+
+let gameScore = 0;
+
+let combo = 0;
+
+let maxCombo = 0;
+
+let timeLeft = 40;
+
+let timerInterval = null;
+
+let waiting = false;
+
+let gameRunning = false;
+
+let countdownRunning = false;
+
+/* =========================================================
+   MOBILE ANSWER-LOCK WATCHDOG
+   Зарим mobile browser дээр transition тасалдахад waiting=true
+   түгжигдэж үлдэхээс хамгаална.
+   ========================================================= */
+let answerLockWatchdog = null;
+
+function clearAnswerLockWatchdog() {
+  if (answerLockWatchdog !== null) {
+    clearTimeout(answerLockWatchdog);
+    answerLockWatchdog = null;
+  }
+}
+
+function armAnswerLockWatchdog() {
+  clearAnswerLockWatchdog();
+
+  answerLockWatchdog = setTimeout(() => {
+    if (gameRunning && !countdownRunning && !practiceMode) {
+      waiting = false;
+    }
+    answerLockWatchdog = null;
+  }, 900);
+}
+
+
+/* =========================
+   TOP 5 УНШИХ
+========================= */
+
+function loadTop5Scores() {
+
+  try {
+
+    const saved =
+      JSON.parse(
+        localStorage.getItem(
+          top5StorageKey()
+        )
+      );
+
+
+    if (Array.isArray(saved)) {
+
+      /*
+        Хуучин хувилбарын object болон
+        шинэ number хэлбэрийг хоёуланг нь уншина.
+        ИЖИЛ ОНООГ НЭГ Л УДАА ҮЛДЭЭНЭ.
+      */
+
+      const scores = saved
+        .map(item => {
+
+          if (typeof item === "number") {
+            return item;
+          }
+
+          if (
+            item &&
+            typeof item === "object"
+          ) {
+            return Number(item.score);
+          }
+
+          return NaN;
+        })
+        .filter(score =>
+          Number.isFinite(score) &&
+          score > 0
+        );
+
+
+      const uniqueScores =
+        [...new Set(scores)]
+          .sort((a, b) => b - a)
+          .slice(0, 5);
+
+
+      /*
+        Хуучин хадгалалтыг шинэ, цэвэр
+        score-only формат руу автоматаар шилжүүлнэ.
+      */
+
+      localStorage.setItem(
+        top5StorageKey(),
+        JSON.stringify(uniqueScores)
+      );
+
+
+      return uniqueScores;
+    }
+
+  } catch (error) {
+
+    console.log(
+      "Top 5 уншихад алдаа:",
+      error
+    );
+
+  }
+
+
+  return [];
+}
+
+
+/* =========================
+   TOP 5 ЭХНИЙ УТГА
+========================= */
+
+let top5Scores =
+  loadTop5Scores();
+
+
+/*
+  Хуучин Best Score байгаа боловч
+  Top 5 байхгүй бол №1 болгон авна.
+*/
+
+const oldComboBest =
+  Number(
+    localStorage.getItem(
+      bestStorageKey()
+    )
+  ) || 0;
+
+
+if (
+  top5Scores.length === 0 &&
+  oldComboBest > 0
+) {
+
+  top5Scores.push(
+    oldComboBest
+  );
+
+
+  localStorage.setItem(
+    top5StorageKey(),
+    JSON.stringify(
+      top5Scores
+    )
+  );
+
+}
+
+
+/*
+  №1 = Best
+*/
+
+let bestScore =
+  top5Scores.length > 0
+    ? top5Scores[0]
+    : 0;
+
+
+/* =========================
+   ХҮРД
+========================= */
+
+let activeWord =
+  document.getElementById(
+    "current-word"
+  );
+
+
+let standbyWord =
+  document.getElementById(
+    "next-word"
+  );
+
+
+/* =========================
+   RANDOM
+========================= */
+
+function randomItem(array) {
+
+  return array[
+    Math.floor(
+      Math.random() *
+      array.length
+    )
+  ];
+
+}
+
+
+function randomDifferentColor(
+  color
+) {
+
+  const others =
+    colors.filter(
+      item =>
+        item !== color
+    );
+
+
+  return randomItem(
+    others
+  );
+
+}
+
+
+/* =========================
+   COMBO MULTIPLIER
+========================= */
+
+function getMultiplier() {
+
+  /*
+    10+ = ×4
+  */
+
+  if (combo >= 10) {
+
+    return 4;
+
+  }
+
+
+  /*
+    5–9 = ×3
+  */
+
+  if (combo >= 5) {
+
+    return 3;
+
+  }
+
+
+  /*
+    3–4 = ×2
+  */
+
+  if (combo >= 3) {
+
+    return 2;
+
+  }
+
+
+  /*
+    1–2 = +1
+  */
+
+  return 1;
+
+}
+
+
+/* =========================
+   COMBO ХАРУУЛАХ
+========================= */
+
+function updateComboDisplay() {
+
+  const comboBox =
+    document.getElementById(
+      "combo-box"
+    );
+
+
+  /*
+    БУРУУ
+  */
+
+  if (combo === 0) {
+
+    comboBox.textContent =
+      "Combo: 0";
+
+    return;
+
+  }
+
+
+  /*
+    1–2 дээр харуулахгүй
+  */
+
+  if (combo < 3) {
+
+    comboBox.textContent =
+      "";
+
+    return;
+
+  }
+
+
+  /*
+    3+ Combo
+  */
+
+  const multiplier =
+    getMultiplier();
+
+
+  comboBox.textContent =
+    "✖️ Combo: " +
+    combo +
+    " ×" +
+    multiplier;
+
+
+  /*
+    Bonus шат ахих
+  */
+
+  if (
+    combo === 3 ||
+    combo === 5 ||
+    combo === 10
+  ) {
+
+    comboBox.classList.remove(
+      "combo-pop"
+    );
+
+
+    void comboBox.offsetWidth;
+
+
+    comboBox.classList.add(
+      "combo-pop"
+    );
+
+  }
+
+}
+
+
+/* =========================
+   TOP 5 ХАДГАЛАХ
+========================= */
+
+function saveScoreToTop5(score) {
+
+  /*
+    0 оноог ШИЛДЭГ 5-д хадгалахгүй.
+  */
+  if (score <= 0) {
+    return -1;
+  }
+
+
+  /*
+    Ижил оноо аль хэдийн Top 5-д байвал
+    дахин нэмэхгүй.
+  */
+
+  if (top5Scores.includes(score)) {
+    return -1;
+  }
+
+
+  const scores = [
+    ...top5Scores,
+    score
+  ]
+    .sort((a, b) => b - a)
+    .slice(0, 5);
+
+
+  const newIndex =
+    scores.indexOf(score);
+
+
+  top5Scores = scores;
+
+
+  localStorage.setItem(
+    top5StorageKey(),
+    JSON.stringify(top5Scores)
+  );
+
+
+  bestScore =
+    top5Scores.length > 0
+      ? top5Scores[0]
+      : 0;
+
+
+  localStorage.setItem(
+    bestStorageKey(),
+    bestScore
+  );
+
+
+  return newIndex;
+}
+
+
+/* =========================
+   TOP 5 ХАРУУЛАХ
+========================= */
+
+function renderTop5(
+  newIndex = -1
+) {
+
+  const list =
+    document.getElementById(
+      "top5-list"
+    );
+
+
+  list.innerHTML = "";
+
+
+  for (let i = 0; i < 5; i++) {
+
+    const row =
+      document.createElement(
+        "div"
+      );
+
+
+    row.className =
+      "top5-row";
+
+
+    if (i === newIndex) {
+
+      row.classList.add(
+        "new-top-score"
+      );
+
+    }
+
+
+    const rank =
+      document.createElement(
+        "span"
+      );
+
+
+    rank.className =
+      "top5-rank";
+
+
+    rank.textContent =
+      (i + 1) + ".";
+
+
+    const scoreDisplay =
+      document.createElement(
+        "span"
+      );
+
+
+    scoreDisplay.className =
+      "top5-score";
+
+
+    scoreDisplay.textContent =
+      i < top5Scores.length
+        ? top5Scores[i]
+        : "—";
+
+
+    row.appendChild(rank);
+    row.appendChild(scoreDisplay);
+
+
+    if (i === newIndex) {
+
+      const badge =
+        document.createElement(
+          "span"
+        );
+
+
+      badge.className =
+        "top5-new";
+
+
+      badge.textContent =
+        "← ШИНЭ!";
+
+
+      row.appendChild(badge);
+    }
+
+
+    list.appendChild(row);
+  }
+}
+
+
+/* =========================
+   ШИНЭ АСУУЛТ
+========================= */
+
+function createRound() {
+
+  const round = {};
+
+
+  const shouldMatch =
+    Math.random() <
+    0.5;
+
+
+  round.leftWord =
+    randomItem(
+      colors
+    );
+
+
+  /*
+    МӨН
+  */
+
+  if (shouldMatch) {
+
+    round.rightColor =
+      round.leftWord;
+
+
+    if (
+      Math.random() <
+      0.5
+    ) {
+
+      round.rightWord =
+        round.leftWord;
+
+    } else {
+
+      round.rightWord =
+        randomDifferentColor(
+          round.leftWord
+        );
+
+    }
+
+
+  } else {
+
+
+    /*
+      БИШ
+    */
+
+    round.rightColor =
+      randomDifferentColor(
+        round.leftWord
+      );
+
+
+    /*
+      Баруун үгийг
+      зориуд будлиулна.
+    */
+
+    if (
+      Math.random() <
+      0.65
+    ) {
+
+      round.rightWord =
+        round.leftWord;
+
+    } else {
+
+      round.rightWord =
+        randomItem(
+          colors
+        );
+
+    }
+
+  }
+
+
+  return round;
+
+}
+
+
+/* =========================
+   ЭХНИЙ АСУУЛТ
+========================= */
+
+function showFirstRound() {
+
+  currentRound =
+    createRound();
+
+
+  document.getElementById(
+    "left-box"
+  ).textContent =
+    currentRound.leftWord;
+
+
+  activeWord.textContent =
+    currentRound.rightWord;
+
+
+  activeWord.style.color =
+    colorValues[
+      currentRound.rightColor
+    ];
+
+
+  activeWord.style.transition =
+    "none";
+
+
+  activeWord.style.transform =
+    "translateY(0)";
+
+
+  activeWord.style.opacity =
+    "1";
+
+
+  standbyWord.style.transition =
+    "none";
+
+
+  standbyWord.style.transform =
+    "translateY(-105%)";
+
+
+  standbyWord.style.opacity =
+    "1";
+
+}
+
+
+/* =========================
+   ХҮРД ЭРГҮҮЛЭХ
+========================= */
+
+function rollToNextRound() {
+
+  if (!gameRunning) {
+
+    return;
+
+  }
+
+
+  const nextRound =
+    createRound();
+
+
+  /*
+    Шинэ үгийг
+    дээр бэлтгэнэ.
+  */
+
+  standbyWord.textContent =
+    nextRound.rightWord;
+
+
+  standbyWord.style.color =
+    colorValues[
+      nextRound.rightColor
+    ];
+
+
+  standbyWord.style.transition =
+    "none";
+
+
+  standbyWord.style.transform =
+    "translateY(-105%)";
+
+
+  standbyWord.style.opacity =
+    "1";
+
+
+  void standbyWord.offsetHeight;
+
+
+  /*
+    Transition
+  */
+
+  activeWord.style.transition =
+    "transform 0.34s cubic-bezier(.4,0,.2,1), opacity 0.34s ease";
+
+
+  standbyWord.style.transition =
+    "transform 0.34s cubic-bezier(.4,0,.2,1), opacity 0.34s ease";
+
+
+  /*
+    Хуучин доош
+  */
+
+  activeWord.style.transform =
+    "translateY(105%)";
+
+
+  activeWord.style.opacity =
+    "0.25";
+
+
+  /*
+    Шинэ дээрээс орно
+  */
+
+  standbyWord.style.transform =
+    "translateY(0)";
+
+
+  standbyWord.style.opacity =
+    "1";
+
+
+  setTimeout(() => {
+
+
+    if (!gameRunning) {
+
+      return;
+
+    }
+
+
+    currentRound =
+      nextRound;
+
+
+    /*
+      Зүүн үг
+    */
+
+    document.getElementById(
+      "left-box"
+    ).textContent =
+      currentRound.leftWord;
+
+
+    /*
+      Элементүүдийн
+      үүргийг солино.
+    */
+
+    const oldActive =
+      activeWord;
+
+
+    activeWord =
+      standbyWord;
+
+
+    standbyWord =
+      oldActive;
+
+
+    /*
+      Хуучин үгийг
+      дээр нууж бэлтгэнэ.
+    */
+
+    standbyWord.style.transition =
+      "none";
+
+
+    standbyWord.style.transform =
+      "translateY(-105%)";
+
+
+    standbyWord.style.opacity =
+      "1";
+
+
+    clearAnswerLockWatchdog();
+
+    waiting =
+      false;
+
+
+  }, 350);
+
+}
+
+
+/* =========================
+   ХАРИУЛТ
+========================= */
+
+function checkAnswer(
+  userSaysMatch
+) {
+
+  if (
+    waiting ||
+    !gameRunning ||
+    countdownRunning
+  ) {
+
+    return;
+
+  }
+
+
+  waiting =
+    true;
+
+  /* Mobile safety: transition гацсан ч товч 0.9 сек-ээс удаан түгжигдэхгүй. */
+  armAnswerLockWatchdog();
+
+
+  const actualMatch =
+    currentRound.leftWord ===
+    currentRound.rightColor;
+
+
+  const result =
+    document.getElementById(
+      "result"
+    );
+
+
+  /*
+    ЗӨВ
+  */
+
+  if (
+    userSaysMatch ===
+    actualMatch
+  ) {
+
+    correctScore++;
+
+
+    combo++;
+
+
+    /*
+      Max Combo
+    */
+
+    if (
+      combo >
+      maxCombo
+    ) {
+
+      maxCombo =
+        combo;
+
+    }
+
+
+    /*
+      Multiplier
+    */
+
+    const multiplier =
+      getMultiplier();
+
+
+    /*
+      Оноо
+    */
+
+    gameScore +=
+      multiplier;
+
+
+    result.textContent =
+      "✓ Зөв! +" +
+      multiplier;
+
+
+    result.style.color =
+      "green";
+
+    if (combo === 3 || combo === 5 || combo === 10) {
+      playSound("sound-combo");
+    } else {
+      playSound("sound-correct");
+    }
+
+
+  } else {
+
+
+    /*
+      БУРУУ
+    */
+
+    wrongScore++;
+
+
+    combo = 0;
+
+
+    result.textContent =
+      "✗ Буруу!";
+
+
+    result.style.color =
+      "red";
+
+    playSound("sound-wrong");
+
+  }
+
+
+  /*
+    Зөв / Буруу
+  */
+
+
+  /*
+    Combo
+  */
+
+  updateComboDisplay();
+
+
+  /*
+    Дараагийн асуулт
+  */
+
+  setTimeout(() => {
+
+
+    result.textContent =
+      "";
+
+
+    rollToNextRound();
+
+
+  }, 120);
+
+}
+
+
+/* =========================
+   ЦАГ
+========================= */
+
+function startTimer() {
+
+  clearInterval(
+    timerInterval
+  );
+
+
+  timerInterval =
+    setInterval(() => {
+
+
+      timeLeft--;
+
+
+      const timerDisplay =
+        document.getElementById(
+          "timer"
+        );
+
+
+      timerDisplay.textContent =
+        timeLeft;
+
+
+      /*
+        5, 4, 3, 2, 1 дээр
+        улаан pulse хийнэ.
+      */
+
+      if (
+        timeLeft <= 5 &&
+        timeLeft > 0
+      ) {
+
+        timerDisplay.classList.remove(
+          "timer-warning"
+        );
+
+        void timerDisplay.offsetWidth;
+
+        timerDisplay.classList.add(
+          "timer-warning"
+        );
+
+      } else {
+
+        timerDisplay.classList.remove(
+          "timer-warning"
+        );
+
+      }
+
+
+      if (
+        timeLeft <= 0
+      ) {
+
+        timerDisplay.classList.remove(
+          "timer-warning"
+        );
+
+        endGame();
+
+      }
+
+
+    }, 1000);
+
+}
+
+
+/* =========================
+   COUNTDOWN
+========================= */
+
+function startCountdown() {
+
+  clearInterval(
+    timerInterval
+  );
+
+  countdownRunning =
+    true;
+
+  gameRunning =
+    false;
+
+  waiting =
+    true;
+
+  document.body.classList.add(
+    "countdown-active"
+  );
+
+
+  /*
+    Таймер countdown дуустал
+    тухайн түвшний бүтэн хугацаан дээрээ
+    хөдөлгөөнгүй байна.
+  */
+
+  timeLeft =
+    difficultySeconds();
+
+  const timerDisplay =
+    document.getElementById(
+      "timer"
+    );
+
+  timerDisplay.textContent =
+    String(
+      difficultySeconds()
+    );
+
+  timerDisplay.classList.remove(
+    "timer-warning"
+  );
+
+
+  document.getElementById(
+    "yes-button"
+  ).disabled =
+    true;
+
+
+  document.getElementById(
+    "no-button"
+  ).disabled =
+    true;
+
+
+  const result =
+    document.getElementById(
+      "result"
+    );
+
+
+  const countdownValues = [
+    "3",
+    "2",
+    "1",
+    "ЭХЭЛ!"
+  ];
+
+
+  let index = 0;
+
+
+  function showNextCountdown() {
+
+    result.classList.remove(
+      "countdown-pop"
+    );
+
+    void result.offsetWidth;
+
+
+    result.textContent =
+      countdownValues[index];
+
+    result.style.color =
+      "#222";
+
+    result.style.fontSize =
+      "36px";
+
+    result.style.fontWeight =
+      "bold";
+
+    result.classList.add(
+      "countdown-pop"
+    );
+
+
+    index++;
+
+
+    if (
+      index <
+      countdownValues.length
+    ) {
+
+      setTimeout(
+        showNextCountdown,
+        700
+      );
+
+    } else {
+
+      setTimeout(() => {
+
+        result.classList.remove(
+          "countdown-pop"
+        );
+
+        result.textContent =
+          "";
+
+        result.style.fontSize =
+          "23px";
+
+
+        countdownRunning =
+          false;
+
+        waiting =
+          false;
+
+        gameRunning =
+          true;
+
+
+        document.body.classList.remove(
+          "countdown-active"
+        );
+
+
+        document.getElementById(
+          "yes-button"
+        ).disabled =
+          false;
+
+
+        document.getElementById(
+          "no-button"
+        ).disabled =
+          false;
+
+
+        /*
+          ЗӨВХӨН ЭНЭ МӨЧӨӨС
+          60 / 40 / 30 секунд эхэлнэ.
+        */
+
+        startTimer();
+
+      }, 700);
+
+    }
+
+  }
+
+
+  showNextCountdown();
+
+}
+
+
+
+/* V9.1: iOS Safari can preserve a small page scroll after tapping controls.
+   Reset only on iOS-sized WebKit screens; no effect on Android/desktop. */
+function resetIOSViewportTop() {
+  const isiOSWebKit = CSS.supports && CSS.supports("-webkit-touch-callout", "none");
+  if (isiOSWebKit && window.innerWidth <= 600) {
+    requestAnimationFrame(() => window.scrollTo(0, 0));
+  }
+}
+
+/* =========================
+   ТОГЛООМ ДУУСАХ
+========================= */
+
+function endGame() {
+
+  resetIOSViewportTop();
+  clearAnswerLockWatchdog();
+
+  document.body.classList.remove("countdown-active");
+
+  document.body.classList.remove("game-active");
+  document.body.classList.add("game-over-visible");
+
+
+  gameRunning =
+    false;
+
+
+  waiting =
+    true;
+
+
+  clearInterval(
+    timerInterval
+  );
+
+
+  const timerDisplay =
+    document.getElementById(
+      "timer"
+    );
+
+
+  timerDisplay.textContent =
+    "0";
+
+
+  timerDisplay.classList.remove(
+    "timer-warning"
+  );
+
+
+  document.getElementById(
+    "yes-button"
+  ).disabled =
+    true;
+
+
+  document.getElementById(
+    "no-button"
+  ).disabled =
+    true;
+
+
+  document.getElementById(
+    "result"
+  ).textContent =
+    "";
+
+
+  /*
+    ҮР ДҮН
+  */
+
+  document.getElementById(
+    "final-score"
+  ).textContent =
+    gameScore;
+
+
+  document.getElementById(
+    "final-correct"
+  ).textContent =
+    correctScore;
+
+
+  document.getElementById(
+    "final-wrong"
+  ).textContent =
+    wrongScore;
+
+
+  /*
+    Өмнөх Best
+  */
+
+  const previousBest =
+    bestScore;
+
+
+  /*
+    Top 5-д хадгална.
+  */
+
+  const newTopIndex =
+    saveScoreToTop5(
+      gameScore
+    );
+
+
+  /*
+    Дээд Best
+  */
+
+  document.getElementById(
+    "best-score"
+  ).textContent =
+    bestScore;
+
+
+  /*
+    Гарчиг
+  */
+
+  const gameOverTitle =
+    document.getElementById(
+      "game-over-title"
+    );
+
+
+  /*
+    ШИНЭ №1 РЕКОРД
+  */
+
+  if (
+    gameScore >
+    previousBest
+  ) {
+
+
+    gameOverTitle.textContent =
+      "🏆 ШИНЭ РЕКОРД!";
+
+
+    gameOverTitle.classList.add(
+      "new-record"
+    );
+
+    playSound("sound-record");
+
+
+  } else {
+
+
+    gameOverTitle.textContent =
+      "⏱ Хугацаа дууслаа!";
+
+
+    gameOverTitle.classList.remove(
+      "new-record"
+    );
+
+  }
+
+
+  /*
+    TOP 5
+  */
+
+  renderTop5(
+    newTopIndex
+  );
+
+
+  /*
+    Game over харуулна.
+  */
+
+  document.getElementById(
+    "game-over"
+  ).style.display =
+    "block";
+
+  /* V6: жинхэнэ тоглолтын статистик хадгална. */
+  recordFinishedGame();
+
+}
+
+
+/* =========================
+   ТОГЛООМ ЭХЛҮҮЛЭХ
+========================= */
+
+function startGame() {
+
+  resetIOSViewportTop();
+  document.body.classList.remove("pre-game");
+  document.body.classList.add("game-active");
+  document.body.classList.remove("countdown-active");
+
+  document.body.classList.remove("game-over-visible");
+
+
+  clearInterval(
+    timerInterval
+  );
+
+
+  /*
+    ШИНЭ ТОГЛОЛТ
+  */
+
+  correctScore = 0;
+
+  wrongScore = 0;
+
+  gameScore = 0;
+
+  combo = 0;
+
+  maxCombo = 0;
+
+  timeLeft = difficultySeconds();
+
+
+  waiting =
+    true;
+
+
+  gameRunning =
+    false;
+
+
+  countdownRunning =
+    false;
+
+
+  /*
+    ДЭЛГЭЦ
+  */
+
+
+  document.getElementById(
+    "best-score"
+  ).textContent =
+    bestScore;
+
+
+  const timerDisplay =
+    document.getElementById(
+      "timer"
+    );
+
+
+  timerDisplay.textContent =
+    String(difficultySeconds());
+
+
+  timerDisplay.classList.remove(
+    "timer-warning"
+  );
+
+
+  document.getElementById(
+    "result"
+  ).textContent =
+    "";
+
+
+  /*
+    Combo эхэнд
+    харагдахгүй.
+  */
+
+  document.getElementById(
+    "combo-box"
+  ).textContent =
+    "";
+
+
+  /*
+    Game over хаана.
+  */
+
+  document.getElementById(
+    "game-over"
+  ).style.display =
+    "none";
+
+
+  /*
+    ХҮРД RESET
+  */
+
+  activeWord =
+    document.getElementById(
+      "current-word"
+    );
+
+
+  standbyWord =
+    document.getElementById(
+      "next-word"
+    );
+
+
+  activeWord.style.transition =
+    "none";
+
+
+  activeWord.style.transform =
+    "translateY(0)";
+
+
+  activeWord.style.opacity =
+    "1";
+
+
+  standbyWord.style.transition =
+    "none";
+
+
+  standbyWord.style.transform =
+    "translateY(-105%)";
+
+
+  standbyWord.style.opacity =
+    "1";
+
+
+  /*
+    ЭХНИЙ АСУУЛТ
+  */
+
+  showFirstRound();
+
+
+  /*
+    COUNTDOWN
+  */
+
+  startCountdown();
+
+}
+
+
+/* =========================
+   ЭХНИЙ BEST
+========================= */
+
+document.getElementById(
+  "best-score"
+).textContent =
+  bestScore;
+
+
+/* =========================
+   ЭХЛЭХ
+========================= */
+
+function showPreGame() {
+
+  resetIOSViewportTop();
+  clearInterval(timerInterval);
+  clearAnswerLockWatchdog();
+
+  document.body.classList.remove("game-active");
+  document.body.classList.remove("countdown-active");
+  document.body.classList.remove("game-over-visible");
+  document.body.classList.add("pre-game");
+
+  countdownRunning = false;
+  gameRunning = false;
+  waiting = true;
+
+  document.getElementById("game-over").style.display = "none";
+  document.getElementById("result").textContent = "";
+  document.getElementById("combo-box").textContent = "";
+
+  timeLeft = difficultySeconds();
+  const timerDisplay = document.getElementById("timer");
+
+  /*
+    FINAL POLISH:
+    Тоглоом эхлэхээс өмнө Цаг / Шилдэг тоо харуулахгүй.
+    Энэ нь Дадлагын pre-game харагдацтай ижил тайван төлөв өгнө.
+  */
+  timerDisplay.textContent = "—";
+  timerDisplay.classList.remove("timer-warning");
+
+  document.getElementById("best-score").textContent = "—";
+
+  setMainButtonsEnabled(false);
+  updateDifficultyButtons();
+}
+
+updateSoundButton();
+updateDifficultyButtons();
+
+showPreGame();
+
+
+/* =========================================================
+   ДАДЛАГЫН ГОРИМ
+   ========================================================= */
+
+let practiceMode = false;
+let practiceStep = 0;
+const PRACTICE_TOTAL = 5;
+
+function setMainButtonsEnabled(enabled) {
+  const yes = document.getElementById("yes-button");
+  const no = document.getElementById("no-button");
+  if (yes) yes.disabled = !enabled;
+  if (no) no.disabled = !enabled;
+}
+
+
+
+function beginRealGame() {
+  /*
+    V5: Дадлага дууссаны дараах “Тоглох” дээр
+    шууд тоглоом эхлэхгүй. Эхлээд түвшин сонгох
+    pre-game төлөв рүү буцна.
+  */
+  practiceMode = false;
+  document.body.classList.remove("practice-mode");
+  document.getElementById("mode-overlay").style.display = "none";
+  document.getElementById("practice-status").style.display = "none";
+  document.getElementById("practice-next").style.display = "none";
+  showPreGame();
+}
+
+function exitPractice() {
+  /* X товч — дадлагыг шууд хаагаад түвшин сонгох дэлгэц рүү */
+  clearInterval(timerInterval);
+  practiceMode = false;
+  practiceStep = 0;
+  gameRunning = false;
+  countdownRunning = false;
+  waiting = true;
+
+  document.body.classList.remove("practice-mode");
+  document.getElementById("mode-overlay").style.display = "none";
+  document.getElementById("practice-status").style.display = "none";
+  document.getElementById("practice-next").style.display = "none";
+
+  const result = document.getElementById("result");
+  if (result) result.textContent = "";
+
+  const comboBox = document.getElementById("combo-box");
+  if (comboBox) comboBox.textContent = "";
+
+  document.getElementById("best-score").textContent = bestScore;
+  showPreGame();
+}
+
+function beginPractice() {
+
+  document.body.classList.remove("pre-game");
+  document.body.classList.remove("game-active");
+  document.body.classList.remove("game-over-visible");
+
+  /*
+    ? дээр дарахад өмнөх тоглолтын үр дүнг бүрэн хаагаад
+    шууд цэвэр дадлагын талбар руу орно.
+  */
+  clearInterval(timerInterval);
+
+  practiceMode = true;
+  practiceStep = 1;
+
+  document.body.classList.add("practice-mode");
+  document.getElementById("mode-overlay").style.display = "none";
+
+  /* Өмнөх тоглолтын үлдэгдлийг нуух/цэвэрлэх */
+  document.getElementById("game-over").style.display = "none";
+
+  const result = document.getElementById("result");
+  if (result) {
+    result.textContent = "";
+    result.classList.remove("result-pop");
+  }
+
+  const comboBox = document.getElementById("combo-box");
+  if (comboBox) {
+    comboBox.textContent = "";
+    comboBox.classList.remove("combo-pop");
+  }
+
+  gameRunning = true;
+  waiting = false;
+  countdownRunning = false;
+
+  /* Дадлага дээр цаг, оноо, рекорд явахгүй. */
+  const timer = document.getElementById("timer");
+  if (timer) {
+    timer.textContent = "—";
+    timer.classList.remove("timer-warning");
+  }
+
+  /* Дадлага дээр Шилдэг оноо тооцогдохгүй. */
+  const practiceBest = document.getElementById("best-score");
+  if (practiceBest) {
+    practiceBest.textContent = "—";
+  }
+
+  correctScore = 0;
+  wrongScore = 0;
+  gameScore = 0;
+  combo = 0;
+  maxCombo = 0;
+
+  activeWord = document.getElementById("current-word");
+  standbyWord = document.getElementById("next-word");
+
+  showFirstRound();
+
+  const status = document.getElementById("practice-status");
+  status.style.display = "block";
+  status.style.color = "";
+  status.textContent = "Дадлага 1 / " + PRACTICE_TOTAL;
+
+  const next = document.getElementById("practice-next");
+  next.style.display = "none";
+
+  setMainButtonsEnabled(true);
+}
+
+function practiceAnswer(userSaysMatch) {
+  if (!practiceMode || waiting || !currentRound) return;
+
+  waiting = true;
+  setMainButtonsEnabled(false);
+
+  const actualMatch =
+    currentRound.leftWord === currentRound.rightColor;
+
+  const status = document.getElementById("practice-status");
+  const colorName = currentRound.rightColor;
+
+  if (userSaysMatch === actualMatch) {
+    status.innerHTML =
+      "✓ Зөв! Баруун талын бичгийн өнгө <b>" +
+      colorName.toUpperCase() +
+      "</b> байна.";
+    status.style.color = "green";
+    if (typeof playSound === "function") {
+      try { playSound("correct"); } catch(e) {}
+    }
+  } else {
+    status.innerHTML =
+      "✗ Буруу. Баруун талын бичгийн өнгө <b>" +
+      colorName.toUpperCase() +
+      "</b> байна.";
+    status.style.color = "red";
+    if (typeof playSound === "function") {
+      try { playSound("wrong"); } catch(e) {}
+    }
+  }
+
+  const next = document.getElementById("practice-next");
+  next.textContent =
+    practiceStep >= PRACTICE_TOTAL ? "Дуусгах" : "Дараах →";
+  next.style.display = "block";
+}
+
+function nextPracticeRound() {
+  if (!practiceMode) return;
+
+  if (practiceStep >= PRACTICE_TOTAL) {
+    finishPractice();
+    return;
+  }
+
+  practiceStep++;
+  waiting = false;
+
+  const status = document.getElementById("practice-status");
+  status.style.color = "";
+  status.textContent =
+    "Дадлага " + practiceStep + " / " + PRACTICE_TOTAL;
+
+  document.getElementById("practice-next").style.display = "none";
+
+  /* Дадлагад ч яг үндсэн тоглоомын хүрдийг ашиглана. */
+  rollToNextRound();
+
+  setTimeout(() => {
+    if (practiceMode) {
+      waiting = false;
+      setMainButtonsEnabled(true);
+    }
+  }, 380);
+}
+
+function finishPractice() {
+  practiceMode = false;
+  document.body.classList.remove("practice-mode");
+  gameRunning = false;
+  waiting = true;
+  setMainButtonsEnabled(false);
+
+  document.getElementById("practice-status").style.display = "none";
+  document.getElementById("practice-next").style.display = "none";
+
+  /* Дадлага дуусмагц бодит Шилдэг оноог буцааж харуулна. */
+  document.getElementById("best-score").textContent = bestScore;
+
+  const overlay = document.getElementById("mode-overlay");
+  const message = document.getElementById("mode-message");
+  const actions = document.getElementById("mode-actions");
+
+  message.innerHTML =
+    "<b>Дадлага дууслаа!</b><br>Одоо жинхэнэ тоглолтоо эхлүүлэх үү?";
+
+  actions.innerHTML =
+    '<button class="practice-btn" onclick="beginPractice()">Дахин дадлага</button>' +
+    '<button class="play-btn" onclick="beginRealGame()">Тоглох</button>';
+
+  overlay.style.display = "flex";
+}
+
+/*
+  Одоогийн checkAnswer()-ийг эвдэхгүйгээр
+  дадлагын үед хариултыг тусад нь шалгана.
+*/
+const originalCheckAnswer = checkAnswer;
+checkAnswer = function(userSaysMatch) {
+  if (practiceMode) {
+    practiceAnswer(userSaysMatch);
+    return;
+  }
+  originalCheckAnswer(userSaysMatch);
+};
+
+
+
+
+/* =========================================================
+   V7 — ACHIEVEMENTS ЛОГИК
+   ========================================================= */
+const ACHIEVEMENTS_KEY = "monbishAchievementsV1";
+const ACHIEVEMENTS = [
+  {id:"first", icon:"🎯", name:"Анхны тоглолт", desc:"1 тоглолт дуусгах", test:s=>s.games>=1},
+  {id:"combo10", icon:"🔥", name:"Combo 10", desc:"10 дараалсан зөв", test:s=>s.maxCombo>=10},
+  {id:"combo20", icon:"⚡", name:"Combo 20", desc:"20 дараалсан зөв", test:s=>s.maxCombo>=20},
+  {id:"perfect", icon:"🧠", name:"Алдаагүй", desc:"Нэг тоглолтод 100% зөв", test:s=>s.recent.some(g=>(g.correct+g.wrong)>0 && g.wrong===0)},
+  {id:"score100", icon:"💯", name:"100 оноо", desc:"Нэг тоглолтод 100+ оноо", test:s=>s.recent.some(g=>g.score>=100) || ["easy","medium","hard"].some(l=>bestForLevel(l)>=100)},
+  {id:"record", icon:"🏆", name:"Рекорд эвдэгч", desc:"Шинэ хувийн рекорд тогтоох", test:s=>gameScore>0 && gameScore===bestForLevel(currentDifficulty)},
+  {id:"games10", icon:"🎮", name:"Туршлагатай", desc:"10 тоглолт дуусгах", test:s=>s.games>=10},
+  {id:"games50", icon:"👑", name:"Мастер", desc:"50 тоглолт дуусгах", test:s=>s.games>=50}
+];
+function loadAchievements(){ try{const a=JSON.parse(localStorage.getItem(ACHIEVEMENTS_KEY)); return Array.isArray(a)?a:[];}catch(e){return [];} }
+function saveAchievements(a){ localStorage.setItem(ACHIEVEMENTS_KEY,JSON.stringify(a)); }
+let achievementToastTimer=null;
+function showAchievementToast(a){ const t=document.getElementById("achievement-toast"); if(!t)return; t.textContent="🏅 ШИНЭ АМЖИЛТ! — "+a.name; t.classList.add("show"); clearTimeout(achievementToastTimer); achievementToastTimer=setTimeout(()=>t.classList.remove("show"),1900); }
+function checkAchievements(stats){ const unlocked=loadAchievements(); const fresh=[]; ACHIEVEMENTS.forEach(a=>{ if(!unlocked.includes(a.id) && a.test(stats)){ unlocked.push(a.id); fresh.push(a); }}); if(fresh.length){ saveAchievements(unlocked); let i=0; const next=()=>{ if(i>=fresh.length)return; showAchievementToast(fresh[i++]); setTimeout(next,2150); }; next(); } }
+function renderAchievements(){ const unlocked=loadAchievements(); const count=document.getElementById("achievement-count"); const list=document.getElementById("achievement-list"); if(!count||!list)return; count.textContent="🏅 Амжилт "+unlocked.length+" / "+ACHIEVEMENTS.length; list.innerHTML=ACHIEVEMENTS.map(a=>{ const on=unlocked.includes(a.id); return '<div class="achievement-item '+(on?'':'locked')+'"><span class="achievement-name">'+(on?a.icon:'🔒')+' '+a.name+'</span><span class="achievement-desc">'+a.desc+'</span></div>'; }).join(""); }
+
+/* =========================================================
+   V6 — СТАТИСТИК ЛОГИК
+   Дадлагын үр дүн энд огт тооцогдохгүй.
+   ========================================================= */
+const STATS_KEY = "monbishStatisticsV1";
+
+function loadStatistics() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STATS_KEY));
+    if (saved && typeof saved === "object") {
+      return {
+        games: Number(saved.games) || 0,
+        correct: Number(saved.correct) || 0,
+        wrong: Number(saved.wrong) || 0,
+        maxCombo: Number(saved.maxCombo) || 0,
+        recent: Array.isArray(saved.recent) ? saved.recent.slice(0, 5) : []
+      };
+    }
+  } catch (e) {}
+  return { games:0, correct:0, wrong:0, maxCombo:0, recent:[] };
+}
+
+function saveStatistics(stats) {
+  localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+}
+
+function recordFinishedGame() {
+  if (practiceMode) return;
+  const stats = loadStatistics();
+  stats.games += 1;
+  stats.correct += correctScore;
+  stats.wrong += wrongScore;
+  stats.maxCombo = Math.max(stats.maxCombo, maxCombo);
+  stats.recent.unshift({
+    score: gameScore,
+    level: currentDifficulty,
+    correct: correctScore,
+    wrong: wrongScore
+  });
+  stats.recent = stats.recent.slice(0, 5);
+  saveStatistics(stats);
+  checkAchievements(stats);
+}
+
+function bestForLevel(level) {
+  try {
+    const raw = JSON.parse(localStorage.getItem("monbishTop5Scores_" + level));
+    if (!Array.isArray(raw)) return 0;
+    const nums = raw.map(x => typeof x === "number" ? x : Number(x && x.score)).filter(Number.isFinite);
+    return nums.length ? Math.max(...nums) : 0;
+  } catch (e) { return 0; }
+}
+
+function renderStatistics() {
+  const stats = loadStatistics();
+  const answers = stats.correct + stats.wrong;
+  const accuracy = answers ? Math.round((stats.correct / answers) * 100) : 0;
+  document.getElementById("stats-games").textContent = stats.games;
+  document.getElementById("stats-correct").textContent = stats.correct;
+  document.getElementById("stats-wrong").textContent = stats.wrong;
+  document.getElementById("stats-answers").textContent = answers;
+  document.getElementById("stats-accuracy").textContent = accuracy + "%";
+  document.getElementById("stats-combo").textContent = stats.maxCombo;
+
+  const levels = document.getElementById("stats-levels");
+  levels.innerHTML = [
+    ["easy", "Хялбар"], ["medium", "Дунд"], ["hard", "Хэцүү"]
+  ].map(([key,label]) => '<div class="stats-row"><span>'+label+'</span><b>'+bestForLevel(key)+'</b></div>').join("");
+
+  const recent = document.getElementById("stats-recent");
+  if (!stats.recent.length) {
+    recent.innerHTML = '<div class="stats-empty">Одоогоор тоглолтын мэдээлэл алга.</div>';
+  } else {
+    recent.innerHTML = stats.recent.map((g,i) => {
+      const label = DIFFICULTIES[g.level] ? DIFFICULTIES[g.level].label : "—";
+      return '<div class="stats-row"><span>'+(i+1)+'. '+label+' · '+g.correct+'✓ '+g.wrong+'✗</span><b>'+g.score+'</b></div>';
+    }).join("");
+  }
+  renderAchievements();
+}
+
+function openStats() {
+  renderStatistics();
+  document.getElementById("stats-overlay").style.display = "flex";
+}
+function closeStats() { document.getElementById("stats-overlay").style.display = "none"; }
+function statsBackdropClose(event) { if (event.target.id === "stats-overlay") closeStats(); }
+
+/* =========================================================
+   V8 — SETTINGS ЛОГИК
+   ========================================================= */
+function openSettings() {
+  const done = document.getElementById("settings-reset-done");
+  if (done) done.textContent = "";
+  document.getElementById("settings-overlay").style.display = "flex";
+}
+
+function closeSettings() {
+  document.getElementById("settings-overlay").style.display = "none";
+}
+
+function settingsBackdropClose(event) {
+  if (event.target.id === "settings-overlay") closeSettings();
+}
+
+function clearStatisticsAndRecords() {
+  const ok = window.confirm(
+    "Статистик, Шилдэг 5, рекорд болон амжилтуудыг бүгдийг цэвэрлэх үү?\n\nДууны тохиргоо болон сонгосон түвшин хэвээр үлдэнэ."
+  );
+
+  if (!ok) return;
+
+  // Статистик
+  localStorage.removeItem(STATS_KEY);
+
+  // Амжилтууд
+  localStorage.removeItem(ACHIEVEMENTS_KEY);
+
+  // Түвшин тус бүрийн Top 5 + Best
+  ["easy", "medium", "hard"].forEach(level => {
+    localStorage.removeItem("monbishTop5Scores_" + level);
+    localStorage.removeItem("monbishBestComboScore_" + level);
+  });
+
+  // Маш хуучин хувилбаруудын үлдэгдэл рекорд байвал мөн цэвэрлэнэ.
+  localStorage.removeItem("monbishTop5Scores");
+  localStorage.removeItem("monbishBestComboScore");
+
+  top5Scores = [];
+  bestScore = 0;
+
+  const best = document.getElementById("best-score");
+  if (best) best.textContent = "0";
+
+  const done = document.getElementById("settings-reset-done");
+  if (done) done.textContent = "✓ Статистик, рекорд болон амжилтууд цэвэрлэгдлээ.";
+}
+
+</script>
+
+
+<div id="mode-overlay" class="mode-overlay" style="display:none;">
+  <div class="mode-card" id="mode-card">
+    <h2>Дадлага</h2>
+    <p id="mode-message">Дадлага дууслаа!</p>
+    <div class="mode-actions" id="mode-actions">
+      <button class="practice-btn" onclick="beginPractice()">Дахин дадлага</button>
+      <button class="play-btn" onclick="beginRealGame()">Тоглох</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div id="stats-overlay" class="stats-overlay" onclick="statsBackdropClose(event)">
+  <div class="stats-card" role="dialog" aria-modal="true" aria-labelledby="stats-title">
+    <button class="stats-close" type="button" onclick="closeStats()" aria-label="Статистик хаах">×</button>
+    <h2 id="stats-title">📊 Статистик</h2>
+    <div class="stats-grid">
+      <div class="stats-item"><span class="stats-label">Нийт тоглосон</span><span class="stats-value" id="stats-games">0</span></div>
+      <div class="stats-item"><span class="stats-label">Зөв хариулт</span><span class="stats-value" id="stats-accuracy">0%</span></div>
+      <div class="stats-item"><span class="stats-label">Нийт зөв</span><span class="stats-value" id="stats-correct">0</span></div>
+      <div class="stats-item"><span class="stats-label">Нийт буруу</span><span class="stats-value" id="stats-wrong">0</span></div>
+      <div class="stats-item"><span class="stats-label">Хамгийн өндөр Combo</span><span class="stats-value" id="stats-combo">0</span></div>
+      <div class="stats-item"><span class="stats-label">Нийт хариулт</span><span class="stats-value" id="stats-answers">0</span></div>
+    </div>
+    <div class="stats-section">
+      <div class="stats-section-title">🏆 Шилдэг оноо</div>
+      <div class="stats-levels" id="stats-levels"></div>
+    </div>
+    <div class="stats-section">
+      <div class="stats-section-title">Сүүлийн 5 тоглолт</div>
+      <div class="stats-recent" id="stats-recent"></div>
+    </div>
+    <div class="achievements-summary">
+      <div class="achievement-count" id="achievement-count">🏅 Амжилт 0 / 8</div>
+      <div class="achievement-list" id="achievement-list"></div>
+    </div>
+  </div>
+</div>
+
+<div id="settings-overlay" class="settings-overlay" onclick="settingsBackdropClose(event)">
+  <div class="settings-card" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <button class="settings-close" type="button" onclick="closeSettings()" aria-label="Тохиргоо хаах">×</button>
+    <h2 id="settings-title">⚙️ Тохиргоо</h2>
+
+    <div class="settings-section">
+      <div class="settings-section-title">📖 Тоглох заавар</div>
+      <div class="settings-help">
+        <p>Зүүн талын <b>үгийн утгыг</b> баруун талын үгийн <b>бичгийн өнгөтэй</b> харьцуулна.</p>
+        <p>Таарч байвал <b>“Мөн”</b>, таарахгүй бол <b>“Биш”</b> товчийг дарна.</p>
+        <p>Дараалсан зөв хариулт <b>Combo</b> үүсгэж, онооны үржүүлэгчийг нэмэгдүүлнэ.</p>
+        <p><b>Хялбар / Дунд / Хэцүү</b> түвшин тус бүр өөр хугацаатай, өөрийн Шилдэг 5 рекордтой.</p>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">🗑 Өгөгдөл цэвэрлэх</div>
+      <p class="settings-reset-note">Статистик, Шилдэг 5 рекорд болон 🏅 амжилтуудыг цэвэрлэнэ. Дууны тохиргоо, сонгосон түвшин хэвээр үлдэнэ.</p>
+      <button class="settings-reset" type="button" onclick="clearStatisticsAndRecords()">Статистик / рекорд цэвэрлэх</button>
+      <div id="settings-reset-done" class="settings-reset-done"></div>
+    </div>
+  </div>
+</div>
+
+<div id="achievement-toast" class="achievement-toast"></div>
+
+<script>
+/* PWA service worker registration.
+   On LAN HTTP addresses iOS may skip Service Worker because it requires a secure context.
+   Home Screen standalone mode still uses the iOS web-app metadata above. */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("./service-worker.js").catch(function () {});
+  });
+}
+</script>
+
+</body>
+</html>
