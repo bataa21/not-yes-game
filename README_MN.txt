@@ -106,3 +106,22 @@ V9.7.2 — STABLE PWA NAME
 - English UI title remains “Not Yes” when EN is selected.
 - Smart Update System from V9.7.1 remains unchanged.
 - This avoids treating “Мөн Биш · Not Yes” as a new installed-app branding name.
+
+
+V9.7.3 — UPDATE VERIFICATION + APP VERSION
+==========================================
+- Settings: App Version 9.7.3
+- EN үед app version name: Not Yes
+- Service Worker registration uses updateViaCache:"none"
+- Navigation requests use network-first + cache:"no-store"
+- Update popup reads the real monbishLanguage key
+- Smart Update waiting-worker flow remains user-controlled
+
+
+V9.7.4 — RELIABLE UPDATE APPLY
+==============================
+- Settings version: App Version 9.7.4
+- Update товч дарахад SKIP_WAITING явуулна.
+- controllerchange болсны дараа cache-busting URL-аар нэг удаа fresh reload хийнэ.
+- Android дээр controllerchange удааширвал 1.8 секундийн fallback reload ажиллана.
+- Шинэ page ачаалсны дараа cache-busting query address bar-аас автоматаар цэвэрлэгдэнэ.

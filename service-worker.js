@@ -1,4 +1,4 @@
-const CACHE_NAME = "mon-bish-v9-7-2-stable-pwa-name";
+const CACHE_NAME = "mon-bish-v9-7-4-reliable-update-apply";
 
 const CORE = [
   "./",
@@ -37,6 +37,21 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
 
+  // For page navigations, always ask the network for the newest index first.
+  // cache:"no-store" prevents a stale HTTP-cache copy from hiding a deployed update.
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(new Request(event.request, { cache: "reload" }))
+        .then(response => {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put("./index.html", copy));
+          return response;
+        })
+        .catch(() => caches.match("./index.html"))
+    );
+    return;
+  }
+
   event.respondWith(
     fetch(event.request)
       .then(response => {
@@ -44,12 +59,9 @@ self.addEventListener("fetch", event => {
         caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
         return response;
       })
-      .catch(() =>
-        caches.match(event.request).then(hit => hit || caches.match("./index.html"))
-      )
+      .catch(() => caches.match(event.request))
   );
 });
-
 
 // V9.7 Smart Update System
 self.addEventListener("message", event => {

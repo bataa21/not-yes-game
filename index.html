@@ -1844,6 +1844,12 @@ body.pre-game .install-control.install-visible {
 #updateLater{background:#eef1f7;color:#242936}
 #updateNow{background:#6559e8;color:#fff}
 
+
+/* V9.7.3 — visible version for update verification */
+.app-version-section { text-align:center; }
+.app-version-name { font-size:14px; font-weight:800; color:#444; }
+.app-version-number { margin-top:3px; font-size:12px; color:#7a7f89; }
+
 </style>
 </head>
 
@@ -2241,6 +2247,7 @@ function applyLanguage() {
   if (st[1]) st[1].textContent = t("recent5");
 
   if (q("#settings-title")) q("#settings-title").textContent = t("settingsTitle");
+  if (q("#app-version-name")) q("#app-version-name").textContent = currentLanguage === "mn" ? "Мөн Биш" : "Not Yes";
   const sst = qa(".settings-section-title");
   if (sst[0]) sst[0].textContent = t("howTo");
   if (q("#settings-stats-title")) q("#settings-stats-title").textContent = t("settingsStats");
@@ -4545,6 +4552,11 @@ function clearStatisticsAndRecords() {
       <button class="settings-stats-button" type="button" onclick="openStatsFromSettings()">Статистик харах</button>
     </div>
 
+    <div class="settings-section app-version-section">
+      <div class="app-version-name" id="app-version-name">Мөн Биш</div>
+      <div class="app-version-number">App Version 9.7.4</div>
+    </div>
+
     <div class="settings-section">
       <div class="settings-section-title">🗑 Өгөгдөл цэвэрлэх</div>
       <p class="settings-reset-note">Статистик, Шилдэг 5 рекорд болон 🏅 амжилтуудыг цэвэрлэнэ. Дууны тохиргоо, сонгосон түвшин хэвээр үлдэнэ.</p>
@@ -4668,7 +4680,7 @@ if (typeof installDisplayMode.addEventListener === "function") {
    Home Screen standalone mode still uses the iOS web-app metadata above. */
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () {
-    navigator.serviceWorker.register("./service-worker.js").catch(function () {});
+    navigator.serviceWorker.register("./service-worker.js", { updateViaCache: "none" }).catch(function () {});
   });
 }
 
@@ -4707,7 +4719,7 @@ function closePracticeComplete() {
   let refreshing = false;
 
   function isMN(){
-    const saved = localStorage.getItem("language") || localStorage.getItem("lang") || "mn";
+    const saved = localStorage.getItem("monbishLanguage") || "mn";
     return String(saved).toLowerCase().startsWith("mn");
   }
 
@@ -4734,17 +4746,39 @@ function closePracticeComplete() {
 
   later.addEventListener("click", () => modal.classList.remove("show"));
 
+  function forceFreshReload() {
+    if (refreshing) return;
+    refreshing = true;
+
+    // Give the new controller a brief moment to take ownership, then
+    // navigate with a one-time cache-busting query so Android cannot
+    // keep showing the old cached index.html.
+    setTimeout(() => {
+      const url = new URL(window.location.href);
+      url.searchParams.set("_appv", "9.7.4");
+      url.searchParams.set("_ts", Date.now().toString());
+      window.location.replace(url.toString());
+    }, 250);
+  }
+
   now.addEventListener("click", () => {
     if(!waitingWorker) return;
     now.disabled = true;
+    sessionStorage.setItem("monbishUpdatePending", "1");
     waitingWorker.postMessage({type:"SKIP_WAITING"});
+
+    // Fallback for Android builds where controllerchange is delayed.
+    setTimeout(() => {
+      if (sessionStorage.getItem("monbishUpdatePending") === "1") {
+        forceFreshReload();
+      }
+    }, 1800);
   });
 
   if("serviceWorker" in navigator){
     navigator.serviceWorker.addEventListener("controllerchange", () => {
-      if(refreshing) return;
-      refreshing = true;
-      window.location.reload();
+      sessionStorage.removeItem("monbishUpdatePending");
+      forceFreshReload();
     });
 
     window.addEventListener("load", async () => {
@@ -4772,6 +4806,19 @@ function closePracticeComplete() {
         });
       }catch(e){}
     });
+  }
+})();
+</script>
+
+
+<script>
+/* V9.7.4 — clean one-time update query from the address bar */
+(() => {
+  const url = new URL(window.location.href);
+  if (url.searchParams.has("_appv") || url.searchParams.has("_ts")) {
+    url.searchParams.delete("_appv");
+    url.searchParams.delete("_ts");
+    history.replaceState(null, "", url.pathname + url.search + url.hash);
   }
 })();
 </script>
