@@ -9,13 +9,13 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Мөн биш">
+<meta name="apple-mobile-web-app-title" content="Мөн Биш">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
 
-<title>Мөн биш</title>
+<title>Мөн Биш</title>
 
 <style>
 
@@ -1765,6 +1765,85 @@ body.pre-game .install-control.install-visible {
   }
 }
 
+
+/* =========================================================
+   V9.6 — MN / EN LANGUAGE SUPPORT
+   ========================================================= */
+.lang-toggle {
+  min-width: 46px;
+  height: 34px;
+  padding: 0 7px;
+  border: 1px solid #dfe4ee;
+  border-radius: 10px;
+  background: #fff;
+  color: #343946;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(39,49,76,.08);
+}
+.lang-toggle:active { transform: scale(.96); }
+@media (max-width:600px) {
+  .lang-toggle { min-width: 43px; padding:0 5px; font-size:11px; }
+}
+
+
+/* V9.6.1 — Practice popup and language-button polish */
+.mode-card { position: relative; }
+.mode-close {
+  position:absolute; top:10px; right:10px; width:32px; height:32px; padding:0;
+  border:1px solid #d3d8e1; border-radius:50%; background:#fff; color:#222;
+  font-size:21px; line-height:29px; font-weight:500; cursor:pointer;
+}
+.mode-close:active { transform:scale(.94); }
+#lang-toggle { margin-left:5px; }
+
+
+/* V9.6.2 — Statistics moved into Settings */
+.settings-stats-button {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d7dce6;
+  border-radius: 12px;
+  background: #f5f6fa;
+  color: #2f3440;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.settings-stats-button:active { transform: translateY(1px); }
+
+
+/* V9.6.3 — Language label stays on one line */
+#lang-toggle {
+  white-space: nowrap;
+  min-width: 58px;
+}
+
+
+/* V9.7 Smart Update System */
+#updateModal{
+  position:fixed; inset:0; z-index:10000;
+  display:none; align-items:center; justify-content:center;
+  padding:20px; background:rgba(20,25,35,.28);
+}
+#updateModal.show{display:flex}
+.update-card{
+  width:min(360px,92vw); background:#fff; border-radius:22px;
+  padding:24px 22px 20px; box-shadow:0 18px 50px rgba(0,0,0,.22);
+  text-align:center;
+}
+.update-card h2{margin:0 0 10px;font-size:24px}
+.update-card p{margin:0 0 20px;line-height:1.45;color:#444}
+.update-actions{display:flex;gap:12px;justify-content:center}
+.update-actions button{
+  flex:1; min-height:44px; border:0; border-radius:12px;
+  font-weight:700; font-size:16px; cursor:pointer;
+}
+#updateLater{background:#eef1f7;color:#242936}
+#updateNow{background:#6559e8;color:#fff}
+
 </style>
 </head>
 
@@ -1775,7 +1854,7 @@ body.pre-game .install-control.install-visible {
 
 <button id="practice-close" class="practice-close" type="button" onclick="exitPractice()" aria-label="Дадлага хаах">×</button>
 
-<h1>Мөн биш</h1>
+<h1>Мөн Биш</h1>
 
 
 <div class="instruction">
@@ -1815,8 +1894,8 @@ body.pre-game .install-control.install-visible {
     </b>
   </div>
 
+  <button id="lang-toggle" class="lang-toggle" type="button" onclick="toggleLanguage()" aria-label="Хэл солих">MN / EN</button>
   <button id="sound-toggle" class="sound-toggle" type="button" onclick="toggleSound()" aria-label="Дуу асаах эсвэл унтраах">🔊</button>
-  <button id="stats-toggle" class="stats-toggle" type="button" onclick="openStats()" aria-label="Статистик харах">📊</button>
   <button id="settings-toggle" class="settings-toggle" type="button" onclick="openSettings()" aria-label="Тохиргоо нээх">⚙️</button>
 
 
@@ -1973,11 +2052,224 @@ body.pre-game .install-control.install-visible {
 
 <script>
 
+
+/* =========================================================
+   V9.6 — MN / EN LANGUAGE ENGINE
+   Internal game logic keeps Mongolian color keys unchanged.
+   Only user-facing text is translated.
+   ========================================================= */
+const I18N = {
+  mn: {
+    appTitle:"Мөн Биш",
+    instruction:'Зүүн талын үгийг баруун талын <b>БИЧГИЙН ӨНГӨТЭЙ</b> харьцуул.',
+    practiceInstruction:'<b>Дадлага:</b> Зүүн талын үгийн утга баруун талын бичгийн өнгөтэй таарч байвал <b>“Мөн”</b>, таарахгүй бол <b>“Биш”</b> товчийг дарна.',
+    best:"Шилдэг:", yes:"Мөн", no:"Биш",
+    easy:"Хялбар", medium:"Дунд", hard:"Хэцүү", start:"Эхлэх", install:"📲 Суулгах",
+    timeUp:"⏱ Хугацаа дууслаа!", newRecord:"🏆 ШИНЭ РЕКОРД!",
+    score:"Оноо:", correct:"Зөв:", wrong:"Буруу:", top5:"🏅 ШИЛДЭГ 5", replay:"Дахин тоглох",
+    newBadge:"← ШИНЭ!", correctMsg:"✓ Зөв! +", wrongMsg:"✗ Буруу!",
+    practice:"Дадлага", practiceNext:"Дараах →", practiceFinish:"Дуусгах",
+    practiceDone:"<b>Дадлага дууслаа!</b><br>Одоо жинхэнэ тоглолтоо эхлүүлэх үү?",
+    practiceAgain:"Дахин дадлага", play:"Тоглох",
+    practiceCorrect:"✓ Зөв! Баруун талын бичгийн өнгө <b>{color}</b> байна.",
+    practiceWrong:"✗ Буруу. Баруун талын бичгийн өнгө <b>{color}</b> байна.",
+    statsTitle:"📊 Статистик",
+    totalGames:"Нийт тоглосон", accuracy:"Зөв хариулт", totalCorrect:"Нийт зөв",
+    totalWrong:"Нийт буруу", maxCombo:"Хамгийн өндөр Combo", totalAnswers:"Нийт хариулт",
+    bestScores:"🏆 Шилдэг оноо", recent5:"Сүүлийн 5 тоглолт", noStats:"Одоогоор тоглолтын мэдээлэл алга.",
+    achievements:"🏅 Амжилт",
+    settingsTitle:"⚙️ Тохиргоо", howTo:"📖 Тоглох заавар",
+    help1:'Зүүн талын <b>үгийн утгыг</b> баруун талын үгийн <b>бичгийн өнгөтэй</b> харьцуулна.',
+    help2:'Таарч байвал <b>“Мөн”</b>, таарахгүй бол <b>“Биш”</b> товчийг дарна.',
+    help3:'Дараалсан зөв хариулт <b>Combo</b> үүсгэж, онооны үржүүлэгчийг нэмэгдүүлнэ.',
+    help4:'<b>Хялбар / Дунд / Хэцүү</b> түвшин тус бүр өөр хугацаатай, өөрийн Шилдэг 5 рекордтой.',
+    settingsStats:"📊 Статистик", settingsStatsButton:"Статистик харах",
+    clearData:"🗑 Өгөгдөл цэвэрлэх",
+    clearNote:"Статистик, Шилдэг 5 рекорд болон 🏅 амжилтуудыг цэвэрлэнэ. Дууны тохиргоо, сонгосон түвшин, хэл хэвээр үлдэнэ.",
+    clearButton:"Статистик / рекорд цэвэрлэх",
+    clearConfirm:"Статистик, Шилдэг 5, рекорд болон амжилтуудыг бүгдийг цэвэрлэх үү?\n\nДууны тохиргоо, сонгосон түвшин болон хэл хэвээр үлдэнэ.",
+    clearDone:"✓ Статистик, рекорд болон амжилтууд цэвэрлэгдлээ.",
+    installTitle:"📲 Мөн Биш суулгах",
+    installIntro:"iPhone / iPad дээр Safari-аас Home Screen-д нэмнэ.",
+    installStep1:'<b>1.</b> Safari-ийн <b>Share</b> ⬆️ товчийг дар.',
+    installStep2:'<b>2.</b> <b>Add to Home Screen</b> сонго.',
+    installStep3:'<b>3.</b> <b>Add</b> дар.',
+    soundOn:"Дуу асаах", soundOff:"Дуу унтраах",
+    practiceClose:"Дадлага хаах", statsOpen:"Статистик харах", settingsOpen:"Тохиргоо нээх",
+    practiceOpen:"Дадлага хийх", langLabel:"Хэл солих",
+    achievementNew:"🏅 ШИНЭ АМЖИЛТ! — ",
+    colors:{Улаан:"Улаан",Ногоон:"Ногоон",Хөх:"Хөх",Шар:"Шар",Цагаан:"Цагаан"}
+  },
+  en: {
+    appTitle:"Not Yes",
+    instruction:'Match the word on the left with the <b>TEXT COLOR</b> on the right.',
+    practiceInstruction:'<b>Practice:</b> If the word on the left matches the text color on the right, tap <b>MATCH</b>. Otherwise tap <b>NO MATCH</b>.',
+    best:"Best:", yes:"MATCH", no:"NO MATCH",
+    easy:"Easy", medium:"Medium", hard:"Hard", start:"Start", install:"📲 Install",
+    timeUp:"⏱ Time’s up!", newRecord:"🏆 NEW RECORD!",
+    score:"Score:", correct:"Correct:", wrong:"Wrong:", top5:"🏅 TOP 5", replay:"Play again",
+    newBadge:"← NEW!", correctMsg:"✓ Correct! +", wrongMsg:"✗ Wrong!",
+    practice:"Practice", practiceNext:"Next →", practiceFinish:"Finish",
+    practiceDone:"<b>Practice complete!</b><br>Ready to play the real game?",
+    practiceAgain:"Practice again", play:"Play",
+    practiceCorrect:"✓ Correct! The text color on the right is <b>{color}</b>.",
+    practiceWrong:"✗ Wrong. The text color on the right is <b>{color}</b>.",
+    statsTitle:"📊 Statistics",
+    totalGames:"Games played", accuracy:"Accuracy", totalCorrect:"Total correct",
+    totalWrong:"Total wrong", maxCombo:"Highest Combo", totalAnswers:"Total answers",
+    bestScores:"🏆 Best scores", recent5:"Last 5 games", noStats:"No game data yet.",
+    achievements:"🏅 Achievements",
+    settingsTitle:"⚙️ Settings", howTo:"📖 How to play",
+    help1:'Compare the <b>meaning of the word</b> on the left with the <b>text color</b> on the right.',
+    help2:'If they match, tap <b>MATCH</b>. If they do not, tap <b>NO MATCH</b>.',
+    help3:'Consecutive correct answers build a <b>Combo</b> and increase your score multiplier.',
+    help4:'<b>Easy / Medium / Hard</b> each has a different time limit and its own Top 5 scores.',
+    settingsStats:"📊 Statistics", settingsStatsButton:"View statistics",
+    clearData:"🗑 Clear data",
+    clearNote:"Clears statistics, Top 5 scores and 🏅 achievements. Sound, selected difficulty and language are kept.",
+    clearButton:"Clear statistics / records",
+    clearConfirm:"Clear all statistics, Top 5 scores, records and achievements?\n\nSound, selected difficulty and language will be kept.",
+    clearDone:"✓ Statistics, records and achievements cleared.",
+    installTitle:"📲 Install Not Yes",
+    installIntro:"On iPhone / iPad, add the game to your Home Screen from Safari.",
+    installStep1:'<b>1.</b> Tap Safari’s <b>Share</b> ⬆️ button.',
+    installStep2:'<b>2.</b> Choose <b>Add to Home Screen</b>.',
+    installStep3:'<b>3.</b> Tap <b>Add</b>.',
+    soundOn:"Turn sound on", soundOff:"Turn sound off",
+    practiceClose:"Close practice", statsOpen:"View statistics", settingsOpen:"Open settings",
+    practiceOpen:"Practice", langLabel:"Change language",
+    achievementNew:"🏅 NEW ACHIEVEMENT! — ",
+    colors:{Улаан:"Red",Ногоон:"Green",Хөх:"Blue",Шар:"Yellow",Цагаан:"White"}
+  }
+};
+
+let currentLanguage = localStorage.getItem("monbishLanguage") || "mn";
+if (!I18N[currentLanguage]) currentLanguage = "mn";
+
+function t(key) { return I18N[currentLanguage][key] ?? key; }
+function displayColorName(mnName) { return I18N[currentLanguage].colors[mnName] || mnName; }
+
+const ACHIEVEMENT_TEXT = {
+  mn: {
+    first:["Анхны тоглолт","1 тоглолт дуусгах"],
+    combo10:["Combo 10","10 дараалсан зөв"],
+    combo20:["Combo 20","20 дараалсан зөв"],
+    perfect:["Алдаагүй","Нэг тоглолтод 100% зөв"],
+    score100:["100 оноо","Нэг тоглолтод 100+ оноо"],
+    record:["Рекорд эвдэгч","Шинэ хувийн рекорд тогтоох"],
+    games10:["Туршлагатай","10 тоглолт дуусгах"],
+    games50:["Мастер","50 тоглолт дуусгах"]
+  },
+  en: {
+    first:["First game","Finish 1 game"],
+    combo10:["Combo 10","10 correct in a row"],
+    combo20:["Combo 20","20 correct in a row"],
+    perfect:["Perfect","100% correct in one game"],
+    score100:["100 points","Score 100+ in one game"],
+    record:["Record breaker","Set a new personal record"],
+    games10:["Experienced","Finish 10 games"],
+    games50:["Master","Finish 50 games"]
+  }
+};
+
+function achievementLabel(a) {
+  return ACHIEVEMENT_TEXT[currentLanguage][a.id] || [a.name, a.desc];
+}
+
+function toggleLanguage() {
+  currentLanguage = currentLanguage === "mn" ? "en" : "mn";
+  localStorage.setItem("monbishLanguage", currentLanguage);
+  applyLanguage();
+}
+
+function applyLanguage() {
+  document.documentElement.lang = currentLanguage === "mn" ? "mn" : "en";
+  document.title = currentLanguage === "mn" ? "Мөн Биш" : "Not Yes";
+
+  const q = s => document.querySelector(s);
+  const qa = s => Array.from(document.querySelectorAll(s));
+  if (q("h1")) q("h1").textContent = t("appTitle");
+  if (q(".instruction")) q(".instruction").innerHTML = t("instruction");
+  if (q("#practice-instruction")) q("#practice-instruction").innerHTML = t("practiceInstruction");
+
+  const topDivs = qa(".top-panel > div");
+  if (topDivs[1]) {
+    const preGameBest = document.body.classList.contains("pre-game") ? "—" : bestScore;
+    topDivs[1].innerHTML = "🏆 " + t("best") + ' <b id="best-score">' + preGameBest + "</b>";
+  }
+
+  if (q("#yes-button")) q("#yes-button").textContent = t("yes");
+  if (q("#no-button")) q("#no-button").textContent = t("no");
+  const diff = {easy:"easy",medium:"medium",hard:"hard"};
+  qa("#difficulty-control button").forEach(b => b.textContent = t(diff[b.dataset.level]));
+  if (q("#start-button")) q("#start-button").textContent = t("start");
+  if (q("#install-button")) q("#install-button").textContent = t("install");
+
+  if (q("#game-over-title") && document.body.classList.contains("game-over-visible")) {
+    q("#game-over-title").textContent = q("#game-over-title").classList.contains("new-record") ? t("newRecord") : t("timeUp");
+  }
+  const fs = qa(".final-stats > div");
+  if (fs[0]) fs[0].childNodes[0].nodeValue = "\n    " + t("score") + "\n    ";
+  if (fs[1]) fs[1].childNodes[0].nodeValue = "\n    " + t("correct") + "\n    ";
+  if (fs[2]) fs[2].childNodes[0].nodeValue = "\n    " + t("wrong") + "\n    ";
+  if (q(".top5-title")) q(".top5-title").textContent = t("top5");
+  if (q("#restart-button")) q("#restart-button").textContent = t("replay");
+
+  if (currentRound) {
+    if (q("#left-box")) q("#left-box").textContent = displayColorName(currentRound.leftWord);
+    if (activeWord) activeWord.textContent = displayColorName(currentRound.rightWord);
+  } else if (q("#left-box")) {
+    q("#left-box").textContent = displayColorName("Улаан");
+  }
+
+  if (q("#lang-toggle")) {
+    q("#lang-toggle").textContent = currentLanguage === "mn" ? "MN / EN" : "EN / MN";
+    q("#lang-toggle").setAttribute("aria-label", t("langLabel"));
+  }
+  if (q("#sound-toggle")) q("#sound-toggle").setAttribute("aria-label", soundEnabled ? t("soundOff") : t("soundOn"));
+  if (q("#settings-toggle")) q("#settings-toggle").setAttribute("aria-label", t("settingsOpen"));
+  if (q("#practice-help")) q("#practice-help").setAttribute("aria-label", t("practiceOpen"));
+  if (q("#practice-close")) q("#practice-close").setAttribute("aria-label", t("practiceClose"));
+  if (q("#mode-title")) q("#mode-title").textContent = t("practice");
+  if (q("#mode-close")) q("#mode-close").setAttribute("aria-label", t("practiceClose"));
+
+  if (q("#stats-title")) q("#stats-title").textContent = t("statsTitle");
+  const sl = qa(".stats-label");
+  [t("totalGames"),t("accuracy"),t("totalCorrect"),t("totalWrong"),t("maxCombo"),t("totalAnswers")].forEach((x,i)=>{if(sl[i])sl[i].textContent=x;});
+  const st = qa(".stats-section-title");
+  if (st[0]) st[0].textContent = t("bestScores");
+  if (st[1]) st[1].textContent = t("recent5");
+
+  if (q("#settings-title")) q("#settings-title").textContent = t("settingsTitle");
+  const sst = qa(".settings-section-title");
+  if (sst[0]) sst[0].textContent = t("howTo");
+  if (q("#settings-stats-title")) q("#settings-stats-title").textContent = t("settingsStats");
+  const statsSettingsButton = q(".settings-stats-button");
+  if (statsSettingsButton) statsSettingsButton.textContent = t("settingsStatsButton");
+  if (sst[sst.length - 1]) sst[sst.length - 1].textContent = t("clearData");
+  const hp = qa(".settings-help p");
+  [t("help1"),t("help2"),t("help3"),t("help4")].forEach((x,i)=>{if(hp[i])hp[i].innerHTML=x;});
+  if (q(".settings-reset-note")) q(".settings-reset-note").textContent = t("clearNote");
+  if (q(".settings-reset")) q(".settings-reset").textContent = t("clearButton");
+
+  if (q("#install-title")) q("#install-title").textContent = t("installTitle");
+  const ip = qa(".install-card > p");
+  if (ip[0]) ip[0].textContent = t("installIntro");
+  const isp = qa(".install-steps p");
+  [t("installStep1"),t("installStep2"),t("installStep3")].forEach((x,i)=>{if(isp[i])isp[i].innerHTML=x;});
+
+  updateSoundButton();
+  updateDifficultyButtons();
+  if (typeof renderStatistics === "function" && q("#stats-overlay") && q("#stats-overlay").style.display === "flex") renderStatistics();
+  if (typeof renderTop5 === "function" && q("#game-over") && q("#game-over").style.display === "block") renderTop5();
+}
+
+
 /* =========================
    ДУУ
 ========================= */
 let soundEnabled = localStorage.getItem("monbishSoundEnabled") !== "false";
-function updateSoundButton(){ const b=document.getElementById("sound-toggle"); if(!b)return; b.textContent=soundEnabled?"🔊":"🔇"; b.title=soundEnabled?"Дуу унтраах":"Дуу асаах"; }
+function updateSoundButton(){ const b=document.getElementById("sound-toggle"); if(!b)return; b.textContent=soundEnabled?"🔊":"🔇"; b.title=soundEnabled?t("soundOff"):t("soundOn"); b.setAttribute("aria-label", b.title); }
 function toggleSound(){ soundEnabled=!soundEnabled; localStorage.setItem("monbishSoundEnabled",String(soundEnabled)); updateSoundButton(); }
 function playSound(id){ if(!soundEnabled)return; const a=document.getElementById(id); if(!a)return; try{a.currentTime=0; const p=a.play(); if(p&&typeof p.catch==="function")p.catch(()=>{});}catch(e){} }
 
@@ -2684,7 +2976,7 @@ function renderTop5(
 
 
       badge.textContent =
-        "← ШИНЭ!";
+        t("newBadge");
 
 
       row.appendChild(badge);
@@ -2800,11 +3092,11 @@ function showFirstRound() {
   document.getElementById(
     "left-box"
   ).textContent =
-    currentRound.leftWord;
+    displayColorName(currentRound.leftWord);
 
 
   activeWord.textContent =
-    currentRound.rightWord;
+    displayColorName(currentRound.rightWord);
 
 
   activeWord.style.color =
@@ -2862,7 +3154,7 @@ function rollToNextRound() {
   */
 
   standbyWord.textContent =
-    nextRound.rightWord;
+    displayColorName(nextRound.rightWord);
 
 
   standbyWord.style.color =
@@ -2943,7 +3235,7 @@ function rollToNextRound() {
     document.getElementById(
       "left-box"
     ).textContent =
-      currentRound.leftWord;
+      displayColorName(currentRound.leftWord);
 
 
     /*
@@ -3075,7 +3367,7 @@ function checkAnswer(
 
 
     result.textContent =
-      "✓ Зөв! +" +
+      t("correctMsg") +
       multiplier;
 
 
@@ -3103,7 +3395,7 @@ function checkAnswer(
 
 
     result.textContent =
-      "✗ Буруу!";
+      t("wrongMsg");
 
 
     result.style.color =
@@ -3286,12 +3578,7 @@ function startCountdown() {
     );
 
 
-  const countdownValues = [
-    "3",
-    "2",
-    "1",
-    "ЭХЭЛ!"
-  ];
+  const countdownValues = ["3","2","1", currentLanguage === "mn" ? "ЭХЭЛ!" : "GO!"];
 
 
   let index = 0;
@@ -3539,7 +3826,7 @@ function endGame() {
 
 
     gameOverTitle.textContent =
-      "🏆 ШИНЭ РЕКОРД!";
+      t("newRecord");
 
 
     gameOverTitle.classList.add(
@@ -3553,7 +3840,7 @@ function endGame() {
 
 
     gameOverTitle.textContent =
-      "⏱ Хугацаа дууслаа!";
+      t("timeUp");
 
 
     gameOverTitle.classList.remove(
@@ -3798,6 +4085,7 @@ updateSoundButton();
 updateDifficultyButtons();
 
 showPreGame();
+applyLanguage();
 
 
 /* =========================================================
@@ -3919,7 +4207,7 @@ function beginPractice() {
   const status = document.getElementById("practice-status");
   status.style.display = "block";
   status.style.color = "";
-  status.textContent = "Дадлага 1 / " + PRACTICE_TOTAL;
+  status.textContent = t("practice") + " 1 / " + PRACTICE_TOTAL;
 
   const next = document.getElementById("practice-next");
   next.style.display = "none";
@@ -3937,22 +4225,16 @@ function practiceAnswer(userSaysMatch) {
     currentRound.leftWord === currentRound.rightColor;
 
   const status = document.getElementById("practice-status");
-  const colorName = currentRound.rightColor;
+  const colorName = displayColorName(currentRound.rightColor);
 
   if (userSaysMatch === actualMatch) {
-    status.innerHTML =
-      "✓ Зөв! Баруун талын бичгийн өнгө <b>" +
-      colorName.toUpperCase() +
-      "</b> байна.";
+    status.innerHTML = t("practiceCorrect").replace("{color}", colorName.toUpperCase());
     status.style.color = "green";
     if (typeof playSound === "function") {
       try { playSound("correct"); } catch(e) {}
     }
   } else {
-    status.innerHTML =
-      "✗ Буруу. Баруун талын бичгийн өнгө <b>" +
-      colorName.toUpperCase() +
-      "</b> байна.";
+    status.innerHTML = t("practiceWrong").replace("{color}", colorName.toUpperCase());
     status.style.color = "red";
     if (typeof playSound === "function") {
       try { playSound("wrong"); } catch(e) {}
@@ -3961,7 +4243,7 @@ function practiceAnswer(userSaysMatch) {
 
   const next = document.getElementById("practice-next");
   next.textContent =
-    practiceStep >= PRACTICE_TOTAL ? "Дуусгах" : "Дараах →";
+    practiceStep >= PRACTICE_TOTAL ? t("practiceFinish") : t("practiceNext");
   next.style.display = "block";
 }
 
@@ -3979,7 +4261,7 @@ function nextPracticeRound() {
   const status = document.getElementById("practice-status");
   status.style.color = "";
   status.textContent =
-    "Дадлага " + practiceStep + " / " + PRACTICE_TOTAL;
+    t("practice") + " " + practiceStep + " / " + PRACTICE_TOTAL;
 
   document.getElementById("practice-next").style.display = "none";
 
@@ -4011,12 +4293,11 @@ function finishPractice() {
   const message = document.getElementById("mode-message");
   const actions = document.getElementById("mode-actions");
 
-  message.innerHTML =
-    "<b>Дадлага дууслаа!</b><br>Одоо жинхэнэ тоглолтоо эхлүүлэх үү?";
+  const modeTitle = document.getElementById("mode-title");
+  if (modeTitle) modeTitle.textContent = t("practice");
+  message.innerHTML = t("practiceDone");
 
-  actions.innerHTML =
-    '<button class="practice-btn" onclick="beginPractice()">Дахин дадлага</button>' +
-    '<button class="play-btn" onclick="beginRealGame()">Тоглох</button>';
+  actions.innerHTML = '<button class="practice-btn" onclick="beginPractice()">'+t("practiceAgain")+'</button>' + '<button class="play-btn" onclick="beginRealGame()">'+t("play")+'</button>';
 
   overlay.style.display = "flex";
 }
@@ -4054,9 +4335,9 @@ const ACHIEVEMENTS = [
 function loadAchievements(){ try{const a=JSON.parse(localStorage.getItem(ACHIEVEMENTS_KEY)); return Array.isArray(a)?a:[];}catch(e){return [];} }
 function saveAchievements(a){ localStorage.setItem(ACHIEVEMENTS_KEY,JSON.stringify(a)); }
 let achievementToastTimer=null;
-function showAchievementToast(a){ const t=document.getElementById("achievement-toast"); if(!t)return; t.textContent="🏅 ШИНЭ АМЖИЛТ! — "+a.name; t.classList.add("show"); clearTimeout(achievementToastTimer); achievementToastTimer=setTimeout(()=>t.classList.remove("show"),1900); }
+function showAchievementToast(a){ const tEl=document.getElementById("achievement-toast"); if(!tEl)return; const label=achievementLabel(a); tEl.textContent=t("achievementNew")+label[0]; tEl.classList.add("show"); clearTimeout(achievementToastTimer); achievementToastTimer=setTimeout(()=>tEl.classList.remove("show"),1900); }
 function checkAchievements(stats){ const unlocked=loadAchievements(); const fresh=[]; ACHIEVEMENTS.forEach(a=>{ if(!unlocked.includes(a.id) && a.test(stats)){ unlocked.push(a.id); fresh.push(a); }}); if(fresh.length){ saveAchievements(unlocked); let i=0; const next=()=>{ if(i>=fresh.length)return; showAchievementToast(fresh[i++]); setTimeout(next,2150); }; next(); } }
-function renderAchievements(){ const unlocked=loadAchievements(); const count=document.getElementById("achievement-count"); const list=document.getElementById("achievement-list"); if(!count||!list)return; count.textContent="🏅 Амжилт "+unlocked.length+" / "+ACHIEVEMENTS.length; list.innerHTML=ACHIEVEMENTS.map(a=>{ const on=unlocked.includes(a.id); return '<div class="achievement-item '+(on?'':'locked')+'"><span class="achievement-name">'+(on?a.icon:'🔒')+' '+a.name+'</span><span class="achievement-desc">'+a.desc+'</span></div>'; }).join(""); }
+function renderAchievements(){ const unlocked=loadAchievements(); const count=document.getElementById("achievement-count"); const list=document.getElementById("achievement-list"); if(!count||!list)return; count.textContent=t("achievements")+" "+unlocked.length+" / "+ACHIEVEMENTS.length; list.innerHTML=ACHIEVEMENTS.map(a=>{ const on=unlocked.includes(a.id); const label=achievementLabel(a); return '<div class="achievement-item '+(on?'':'locked')+'"><span class="achievement-name">'+(on?a.icon:'🔒')+' '+label[0]+'</span><span class="achievement-desc">'+label[1]+'</span></div>'; }).join(""); }
 
 /* =========================================================
    V6 — СТАТИСТИК ЛОГИК
@@ -4123,16 +4404,14 @@ function renderStatistics() {
   document.getElementById("stats-combo").textContent = stats.maxCombo;
 
   const levels = document.getElementById("stats-levels");
-  levels.innerHTML = [
-    ["easy", "Хялбар"], ["medium", "Дунд"], ["hard", "Хэцүү"]
-  ].map(([key,label]) => '<div class="stats-row"><span>'+label+'</span><b>'+bestForLevel(key)+'</b></div>').join("");
+  levels.innerHTML = [["easy", t("easy")], ["medium", t("medium")], ["hard", t("hard")]].map(([key,label]) => '<div class="stats-row"><span>'+label+'</span><b>'+bestForLevel(key)+'</b></div>').join("");
 
   const recent = document.getElementById("stats-recent");
   if (!stats.recent.length) {
-    recent.innerHTML = '<div class="stats-empty">Одоогоор тоглолтын мэдээлэл алга.</div>';
+    recent.innerHTML = '<div class="stats-empty">'+t("noStats")+'</div>';
   } else {
     recent.innerHTML = stats.recent.map((g,i) => {
-      const label = DIFFICULTIES[g.level] ? DIFFICULTIES[g.level].label : "—";
+      const label = DIFFICULTIES[g.level] ? t(g.level) : "—";
       return '<div class="stats-row"><span>'+(i+1)+'. '+label+' · '+g.correct+'✓ '+g.wrong+'✗</span><b>'+g.score+'</b></div>';
     }).join("");
   }
@@ -4140,6 +4419,7 @@ function renderStatistics() {
 }
 
 function openStats() {
+  applyLanguage();
   renderStatistics();
   document.getElementById("stats-overlay").style.display = "flex";
 }
@@ -4150,9 +4430,15 @@ function statsBackdropClose(event) { if (event.target.id === "stats-overlay") cl
    V8 — SETTINGS ЛОГИК
    ========================================================= */
 function openSettings() {
+  applyLanguage();
   const done = document.getElementById("settings-reset-done");
   if (done) done.textContent = "";
   document.getElementById("settings-overlay").style.display = "flex";
+}
+
+function openStatsFromSettings() {
+  closeSettings();
+  openStats();
 }
 
 function closeSettings() {
@@ -4164,9 +4450,7 @@ function settingsBackdropClose(event) {
 }
 
 function clearStatisticsAndRecords() {
-  const ok = window.confirm(
-    "Статистик, Шилдэг 5, рекорд болон амжилтуудыг бүгдийг цэвэрлэх үү?\n\nДууны тохиргоо болон сонгосон түвшин хэвээр үлдэнэ."
-  );
+  const ok = window.confirm(t("clearConfirm"));
 
   if (!ok) return;
 
@@ -4193,7 +4477,7 @@ function clearStatisticsAndRecords() {
   if (best) best.textContent = "0";
 
   const done = document.getElementById("settings-reset-done");
-  if (done) done.textContent = "✓ Статистик, рекорд болон амжилтууд цэвэрлэгдлээ.";
+  if (done) done.textContent = t("clearDone");
 }
 
 </script>
@@ -4201,7 +4485,8 @@ function clearStatisticsAndRecords() {
 
 <div id="mode-overlay" class="mode-overlay" style="display:none;">
   <div class="mode-card" id="mode-card">
-    <h2>Дадлага</h2>
+    <button id="mode-close" class="mode-close" type="button" onclick="closePracticeComplete()" aria-label="Хаах">×</button>
+    <h2 id="mode-title">Дадлага</h2>
     <p id="mode-message">Дадлага дууслаа!</p>
     <div class="mode-actions" id="mode-actions">
       <button class="practice-btn" onclick="beginPractice()">Дахин дадлага</button>
@@ -4256,6 +4541,11 @@ function clearStatisticsAndRecords() {
     </div>
 
     <div class="settings-section">
+      <div class="settings-section-title" id="settings-stats-title">📊 Статистик</div>
+      <button class="settings-stats-button" type="button" onclick="openStatsFromSettings()">Статистик харах</button>
+    </div>
+
+    <div class="settings-section">
       <div class="settings-section-title">🗑 Өгөгдөл цэвэрлэх</div>
       <p class="settings-reset-note">Статистик, Шилдэг 5 рекорд болон 🏅 амжилтуудыг цэвэрлэнэ. Дууны тохиргоо, сонгосон түвшин хэвээр үлдэнэ.</p>
       <button class="settings-reset" type="button" onclick="clearStatisticsAndRecords()">Статистик / рекорд цэвэрлэх</button>
@@ -4268,7 +4558,7 @@ function clearStatisticsAndRecords() {
 <div id="install-overlay" class="install-overlay" onclick="installBackdropClose(event)">
   <div class="install-card" role="dialog" aria-modal="true" aria-labelledby="install-title">
     <button class="install-close" type="button" onclick="closeInstallHelp()" aria-label="Суулгах заавар хаах">×</button>
-    <h2 id="install-title">📲 Мөн биш суулгах</h2>
+    <h2 id="install-title">📲 Мөн Биш суулгах</h2>
     <p>iPhone / iPad дээр Safari-аас Home Screen-д нэмнэ.</p>
     <div class="install-steps">
       <p><b>1.</b> Safari-ийн <b>Share</b> <span aria-hidden="true">⬆️</span> товчийг дар.</p>
@@ -4381,6 +4671,109 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./service-worker.js").catch(function () {});
   });
 }
+
+function closePracticeComplete() {
+  const overlay = document.getElementById("mode-overlay");
+  if (overlay) overlay.style.display = "none";
+  practiceMode = false;
+  document.body.classList.remove("practice-mode");
+  showPreGame();
+  applyLanguage();
+}
+</script>
+
+
+<div id="updateModal" role="dialog" aria-modal="true" aria-labelledby="updateTitle">
+  <div class="update-card">
+    <h2 id="updateTitle">Шинэчлэлт боломжтой</h2>
+    <p id="updateText">Мөн Биш-ийн шинэ хувилбар бэлэн боллоо.</p>
+    <div class="update-actions">
+      <button id="updateLater" type="button">Дараа</button>
+      <button id="updateNow" type="button">Шинэчлэх</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* V9.7 Smart Update System */
+(() => {
+  const modal = document.getElementById("updateModal");
+  const title = document.getElementById("updateTitle");
+  const text = document.getElementById("updateText");
+  const later = document.getElementById("updateLater");
+  const now = document.getElementById("updateNow");
+  let waitingWorker = null;
+  let refreshing = false;
+
+  function isMN(){
+    const saved = localStorage.getItem("language") || localStorage.getItem("lang") || "mn";
+    return String(saved).toLowerCase().startsWith("mn");
+  }
+
+  function localizeUpdate(){
+    if(isMN()){
+      title.textContent = "Шинэчлэлт боломжтой";
+      text.textContent = "Мөн Биш-ийн шинэ хувилбар бэлэн боллоо.";
+      later.textContent = "Дараа";
+      now.textContent = "Шинэчлэх";
+    }else{
+      title.textContent = "Update available";
+      text.textContent = "A new version of Not Yes is ready.";
+      later.textContent = "Later";
+      now.textContent = "Update";
+    }
+  }
+
+  function showUpdate(worker){
+    if(!worker) return;
+    waitingWorker = worker;
+    localizeUpdate();
+    modal.classList.add("show");
+  }
+
+  later.addEventListener("click", () => modal.classList.remove("show"));
+
+  now.addEventListener("click", () => {
+    if(!waitingWorker) return;
+    now.disabled = true;
+    waitingWorker.postMessage({type:"SKIP_WAITING"});
+  });
+
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if(refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
+
+    window.addEventListener("load", async () => {
+      try{
+        const reg = await navigator.serviceWorker.ready;
+
+        if(reg.waiting && navigator.serviceWorker.controller){
+          showUpdate(reg.waiting);
+        }
+
+        reg.addEventListener("updatefound", () => {
+          const worker = reg.installing;
+          if(!worker) return;
+          worker.addEventListener("statechange", () => {
+            if(worker.state === "installed" && navigator.serviceWorker.controller){
+              showUpdate(worker);
+            }
+          });
+        });
+
+        // Check when app starts and when returning to it.
+        reg.update().catch(()=>{});
+        document.addEventListener("visibilitychange", () => {
+          if(document.visibilityState === "visible") reg.update().catch(()=>{});
+        });
+      }catch(e){}
+    });
+  }
+})();
 </script>
 
 </body>

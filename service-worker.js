@@ -1,4 +1,4 @@
-const CACHE_NAME = "mon-bish-v9-5-smart-install";
+const CACHE_NAME = "mon-bish-v9-7-2-stable-pwa-name";
 
 const CORE = [
   "./",
@@ -19,7 +19,6 @@ self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(CORE))
   );
-  self.skipWaiting();
 });
 
 self.addEventListener("activate", event => {
@@ -49,4 +48,12 @@ self.addEventListener("fetch", event => {
         caches.match(event.request).then(hit => hit || caches.match("./index.html"))
       )
   );
+});
+
+
+// V9.7 Smart Update System
+self.addEventListener("message", event => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
