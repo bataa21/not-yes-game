@@ -1657,6 +1657,114 @@ body.practice-mode .practice-close {
   }
 }
 
+
+/* =========================================================
+   V9.5 — SMART INSTALL BUTTON
+   Android/Chrome: native PWA install prompt
+   iPhone/iPad: Add to Home Screen заавар
+   Standalone үед автоматаар нуугдана.
+   ========================================================= */
+.install-control {
+  display: none;
+  justify-content: center;
+  margin: 8px auto 0;
+}
+
+body.pre-game .install-control.install-visible {
+  display: flex;
+}
+
+.install-button {
+  min-width: 132px;
+  padding: 8px 16px;
+  border: 1px solid #cfd4e5;
+  border-radius: 11px;
+  background: #f6f7fb;
+  color: #343946;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 3px 9px rgba(39,49,76,.08);
+}
+
+.install-button:active {
+  transform: translateY(1px);
+}
+
+.install-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10060;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(35,45,65,.34);
+}
+
+.install-card {
+  position: relative;
+  width: min(92vw, 360px);
+  padding: 22px 20px 20px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 14px 40px rgba(0,0,0,.20);
+  text-align: center;
+}
+
+.install-card h2 {
+  margin: 0 38px 12px;
+  font-size: 23px;
+}
+
+.install-card p {
+  margin: 0 0 10px;
+  color: #444;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.install-card .install-steps {
+  margin: 13px 0 0;
+  padding: 12px 13px;
+  border: 1px solid #e1e5ed;
+  border-radius: 11px;
+  background: #f7f8fb;
+  text-align: left;
+}
+
+.install-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid #d3d8e1;
+  border-radius: 50%;
+  background: #fff;
+  color: #333;
+  font-size: 19px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .install-control {
+    margin-top: 7px;
+  }
+
+  .install-button {
+    min-width: 124px;
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .install-card {
+    padding: 20px 17px 18px;
+  }
+}
+
 </style>
 </head>
 
@@ -1790,6 +1898,14 @@ body.practice-mode .practice-close {
 <div id="start-control" class="start-control">
   <button id="start-button" type="button" onclick="startGame()">Эхлэх</button>
 </div>
+
+
+<div id="install-control" class="install-control">
+  <button id="install-button" class="install-button" type="button" onclick="handleSmartInstall()">
+    📲 Суулгах
+  </button>
+</div>
+
 
 
 <!-- =========================
@@ -4148,7 +4264,113 @@ function clearStatisticsAndRecords() {
   </div>
 </div>
 
+
+<div id="install-overlay" class="install-overlay" onclick="installBackdropClose(event)">
+  <div class="install-card" role="dialog" aria-modal="true" aria-labelledby="install-title">
+    <button class="install-close" type="button" onclick="closeInstallHelp()" aria-label="Суулгах заавар хаах">×</button>
+    <h2 id="install-title">📲 Мөн биш суулгах</h2>
+    <p>iPhone / iPad дээр Safari-аас Home Screen-д нэмнэ.</p>
+    <div class="install-steps">
+      <p><b>1.</b> Safari-ийн <b>Share</b> <span aria-hidden="true">⬆️</span> товчийг дар.</p>
+      <p><b>2.</b> <b>Add to Home Screen</b> сонго.</p>
+      <p><b>3.</b> <b>Add</b> дар.</p>
+    </div>
+  </div>
+</div>
+
+
 <div id="achievement-toast" class="achievement-toast"></div>
+
+
+<script>
+/* =========================================================
+   V9.5 — SMART INSTALL LOGIC
+   ========================================================= */
+let deferredInstallPrompt = null;
+
+function isStandaloneApp() {
+  return window.matchMedia("(display-mode: standalone)").matches ||
+         window.navigator.standalone === true;
+}
+
+function isIOSDevice() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+
+function updateInstallButtonVisibility() {
+  const control = document.getElementById("install-control");
+  if (!control) return;
+
+  const shouldShow =
+    !isStandaloneApp() &&
+    (isIOSDevice() || deferredInstallPrompt !== null);
+
+  control.classList.toggle("install-visible", shouldShow);
+}
+
+function openInstallHelp() {
+  const overlay = document.getElementById("install-overlay");
+  if (overlay) overlay.style.display = "flex";
+}
+
+function closeInstallHelp() {
+  const overlay = document.getElementById("install-overlay");
+  if (overlay) overlay.style.display = "none";
+}
+
+function installBackdropClose(event) {
+  if (event.target && event.target.id === "install-overlay") {
+    closeInstallHelp();
+  }
+}
+
+async function handleSmartInstall() {
+  if (isStandaloneApp()) {
+    updateInstallButtonVisibility();
+    return;
+  }
+
+  if (deferredInstallPrompt) {
+    const promptEvent = deferredInstallPrompt;
+    deferredInstallPrompt = null;
+
+    try {
+      await promptEvent.prompt();
+      await promptEvent.userChoice;
+    } catch (error) {
+      /* Browser prompt алдаа гарсан ч тоглоомд нөлөөлөхгүй. */
+    }
+
+    updateInstallButtonVisibility();
+    return;
+  }
+
+  if (isIOSDevice()) {
+    openInstallHelp();
+  }
+}
+
+window.addEventListener("beforeinstallprompt", event => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  updateInstallButtonVisibility();
+});
+
+window.addEventListener("appinstalled", () => {
+  deferredInstallPrompt = null;
+  closeInstallHelp();
+  updateInstallButtonVisibility();
+});
+
+window.addEventListener("DOMContentLoaded", updateInstallButtonVisibility);
+window.addEventListener("pageshow", updateInstallButtonVisibility);
+
+const installDisplayMode = window.matchMedia("(display-mode: standalone)");
+if (typeof installDisplayMode.addEventListener === "function") {
+  installDisplayMode.addEventListener("change", updateInstallButtonVisibility);
+}
+</script>
+
 
 <script>
 /* PWA service worker registration.
