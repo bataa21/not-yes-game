@@ -1,4 +1,4 @@
-const CACHE_NAME = "mon-bish-v9-4-offline-audio";
+const CACHE_NAME = "mon-bish-v9-5-smart-install";
 
 const CORE = [
   "./",
@@ -19,7 +19,6 @@ self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(CORE))
   );
-
   self.skipWaiting();
 });
 
@@ -33,30 +32,21 @@ self.addEventListener("activate", event => {
       )
     )
   );
-
   self.clients.claim();
 });
 
 self.addEventListener("fetch", event => {
-  if (event.request.method !== "GET") {
-    return;
-  }
+  if (event.request.method !== "GET") return;
 
   event.respondWith(
     fetch(event.request)
       .then(response => {
         const copy = response.clone();
-
-        caches
-          .open(CACHE_NAME)
-          .then(cache => cache.put(event.request, copy));
-
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
         return response;
       })
       .catch(() =>
-        caches
-          .match(event.request)
-          .then(hit => hit || caches.match("./index.html"))
+        caches.match(event.request).then(hit => hit || caches.match("./index.html"))
       )
   );
 });
