@@ -1,3 +1,7 @@
+V9.7.10 — Game Cards Centering Polish
+- iPhone болон нарийн дэлгэц дээр 2 өнгөний карт, Мөн/Биш товчийг хосоор нь яг төвд тэгш хэмтэй байрлуулсан.
+- V9.7.9 header, Settings, sound, PWA/service worker logic болон game logic өөрчлөгдөөгүй.
+
 МӨН БИШ — PWA V9.3 FINAL ICON
 
 Файлууд:
@@ -125,3 +129,17 @@ V9.7.4 — RELIABLE UPDATE APPLY
 - controllerchange болсны дараа cache-busting URL-аар нэг удаа fresh reload хийнэ.
 - Android дээр controllerchange удааширвал 1.8 секундийн fallback reload ажиллана.
 - Шинэ page ачаалсны дараа cache-busting query address bar-аас автоматаар цэвэрлэгдэнэ.
+
+
+V9.7.9 — iPhone Header Fit Fix: нарийн дэлгэц дээр дээд мөрийн бүх control-ыг нэг мөрөнд card дотор багтаав.
+
+
+V9.7.11 — LANGUAGE & BROWSER POLISH
+===================================
+- Saved MN/EN language is applied before first paint.
+- <html lang> and <body lang> stay synchronized with MN/EN.
+- Browser machine-translation prompts are suppressed because the app has its own MN/EN translation.
+- Document title stays Мөн Биш / Not Yes according to the selected language.
+- Update cache-busting marker updated to 9.7.11.
+- V9.7.10 layout, centering, game logic and cache-safety behavior are preserved.
+- Settings shows App Version 9.7.11.

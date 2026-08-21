@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="google" content="notranslate">
 
 
 <meta name="theme-color" content="#e8ecf4">
@@ -16,6 +17,25 @@
 <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
 
 <title>Мөн Биш</title>
+
+<script>
+/* V9.7.11 — apply saved language before first paint */
+(() => {
+  try {
+    const savedLanguage = localStorage.getItem("monbishLanguage");
+    if (savedLanguage === "en") {
+      document.documentElement.lang = "en";
+      document.title = "Not Yes";
+    } else {
+      document.documentElement.lang = "mn";
+      document.title = "Мөн Биш";
+    }
+  } catch (_) {
+    document.documentElement.lang = "mn";
+  }
+})();
+</script>
+
 
 <style>
 
@@ -1850,6 +1870,253 @@ body.pre-game .install-control.install-visible {
 .app-version-name { font-size:14px; font-weight:800; color:#444; }
 .app-version-number { margin-top:3px; font-size:12px; color:#7a7f89; }
 
+
+/* =========================================================
+   V9.7.5 — RESPONSIVE HEADER + LANGUAGE POLISH
+   ========================================================= */
+.best-inline {
+  white-space: nowrap;
+}
+
+/* Keep timer and Best compact without changing desktop/Android layout. */
+.top-panel > div {
+  flex-shrink: 0;
+}
+
+/* iPhone / narrow mobile: keep trophy + Best together and reduce header crowding. */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 600px) {
+    .top-panel {
+      column-gap: 10px;
+      row-gap: 4px;
+      align-items: center;
+    }
+
+    .best-block,
+    .top-panel > div:nth-child(2) {
+      min-width: 118px;
+      text-align: center;
+    }
+
+    .best-inline {
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    #best-score {
+      display: block;
+      margin-top: 1px;
+      line-height: 1.05;
+    }
+  }
+}
+
+
+/* =========================================================
+   V9.7.7 — RESPONSIVE HEADER FINAL POLISH
+   Keep the header readable and all controls inside the card
+   on iPhone/Android widths without globally shrinking the game.
+   ========================================================= */
+@media (max-width: 480px) {
+  .game-container {
+    width: calc(100vw - 20px) !important;
+    max-width: none !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    overflow-x: hidden !important;
+  }
+
+  h1 {
+    font-size: clamp(30px, 9vw, 42px) !important;
+    line-height: 1.05 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .instruction {
+    font-size: clamp(14px, 4.2vw, 18px) !important;
+    line-height: 1.15 !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .topbar {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: grid !important;
+    grid-template-columns: minmax(42px, .62fr) minmax(100px, 1.35fr) auto auto auto !important;
+    align-items: center !important;
+    justify-content: stretch !important;
+    column-gap: clamp(5px, 1.8vw, 10px) !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    transform: none !important;
+  }
+
+  .stat {
+    min-width: 0 !important;
+  }
+
+  .stat-label,
+  .stat-value {
+    white-space: nowrap !important;
+  }
+
+  .topbar button,
+  .lang-btn,
+  .icon-btn {
+    min-width: 0 !important;
+    flex: none !important;
+  }
+
+  .lang-btn {
+    white-space: nowrap !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .game-container {
+    width: calc(100vw - 12px) !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .topbar {
+    grid-template-columns: minmax(38px, .55fr) minmax(92px, 1.25fr) auto auto auto !important;
+    column-gap: 4px !important;
+  }
+
+  .lang-btn {
+    padding-left: 7px !important;
+    padding-right: 7px !important;
+  }
+}
+
+
+/* =========================================================
+   V9.7.8 — iPHONE HEADER FIT FIX
+   Fix the real .top-panel (V9.7.7 targeted the unused .topbar).
+   Keep all six header controls on one row inside the app card.
+   ========================================================= */
+@media (max-width: 480px) {
+  .top-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 30px minmax(94px, 1fr) 43px 32px 32px 32px !important;
+    gap: 4px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding: 0 !important;
+    font-size: 16px !important;
+  }
+
+  .top-panel > div { min-width: 0 !important; }
+  .top-panel > div:first-child { white-space: nowrap !important; font-size: 14px !important; }
+  .top-panel .time { font-size: 17px !important; }
+
+  .top-panel .best-block {
+    min-width: 0 !important;
+    width: auto !important;
+    text-align: center !important;
+    font-size: 16px !important;
+  }
+  .top-panel .best-inline { font-size: 16px !important; }
+  .top-panel #best-score { font-size: 17px !important; }
+
+  .top-panel .lang-toggle {
+    width: 43px !important; min-width: 43px !important; height: 32px !important;
+    padding: 0 3px !important; font-size: 10px !important;
+  }
+  .top-panel .sound-toggle,
+  .top-panel .settings-toggle,
+  .top-panel .practice-help {
+    width: 32px !important; min-width: 32px !important; height: 32px !important;
+    padding: 0 !important; font-size: 16px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell { padding-left: 12px !important; padding-right: 12px !important; }
+  .top-panel {
+    grid-template-columns: 28px minmax(88px, 1fr) 41px 30px 30px 30px !important;
+    gap: 3px !important;
+  }
+  .top-panel .best-block, .top-panel .best-inline { font-size: 15px !important; }
+  .top-panel .lang-toggle { width:41px !important; min-width:41px !important; }
+  .top-panel .sound-toggle, .top-panel .settings-toggle, .top-panel .practice-help {
+    width:30px !important; min-width:30px !important; height:30px !important;
+  }
+}
+
+
+/* =========================================================
+   V9.7.10 — GAME CARDS CENTERING POLISH
+   Keep the two word cards and the two answer buttons as
+   symmetric centered pairs on narrow phones (incl. iPhone 13).
+   ========================================================= */
+@media (max-width: 480px) {
+  .game-container {
+    width: min(100%, 294px) !important;
+    max-width: 294px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 14px !important;
+  }
+
+  #left-box,
+  #right-window {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .answer-buttons {
+    width: min(100%, 258px) !important;
+    max-width: 258px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 18px !important;
+  }
+
+  .answer-buttons button {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* =========================================================
+   V9.7.9 — HEADER MICRO FIT
+   Prevent control buttons from exceeding their grid tracks.
+   ========================================================= */
+@media (max-width: 480px) {
+  .top-panel .lang-toggle,
+  .top-panel .sound-toggle,
+  .top-panel .settings-toggle,
+  .top-panel .practice-help {
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+  }
+
+  .top-panel .lang-toggle {
+    padding-left: 1px !important;
+    padding-right: 1px !important;
+    white-space: nowrap !important;
+  }
+}
+
 </style>
 </head>
 
@@ -1893,8 +2160,8 @@ body.pre-game .install-control.install-visible {
   </div>
 
 
-  <div>
-    🏆 Шилдэг:
+  <div class="best-block">
+    <span class="best-inline">🏆 Шилдэг:</span>
     <b id="best-score">
       0
     </b>
@@ -2189,7 +2456,12 @@ function toggleLanguage() {
 }
 
 function applyLanguage() {
-  document.documentElement.lang = currentLanguage === "mn" ? "mn" : "en";
+  const pageLanguage = currentLanguage === "mn" ? "mn" : "en";
+  document.documentElement.setAttribute("lang", pageLanguage);
+  document.documentElement.lang = pageLanguage;
+  document.body.setAttribute("lang", pageLanguage);
+  document.body.setAttribute("translate", "no");
+  document.body.classList.add("notranslate");
   document.title = currentLanguage === "mn" ? "Мөн Биш" : "Not Yes";
 
   const q = s => document.querySelector(s);
@@ -2201,7 +2473,7 @@ function applyLanguage() {
   const topDivs = qa(".top-panel > div");
   if (topDivs[1]) {
     const preGameBest = document.body.classList.contains("pre-game") ? "—" : bestScore;
-    topDivs[1].innerHTML = "🏆 " + t("best") + ' <b id="best-score">' + preGameBest + "</b>";
+    topDivs[1].innerHTML = '<span class="best-inline">🏆 ' + t("best") + '</span> <b id="best-score">' + preGameBest + "</b>";
   }
 
   if (q("#yes-button")) q("#yes-button").textContent = t("yes");
@@ -4554,7 +4826,7 @@ function clearStatisticsAndRecords() {
 
     <div class="settings-section app-version-section">
       <div class="app-version-name" id="app-version-name">Мөн Биш</div>
-      <div class="app-version-number">App Version 9.7.4</div>
+      <div class="app-version-number">App Version 9.7.11</div>
     </div>
 
     <div class="settings-section">
@@ -4755,7 +5027,7 @@ function closePracticeComplete() {
     // keep showing the old cached index.html.
     setTimeout(() => {
       const url = new URL(window.location.href);
-      url.searchParams.set("_appv", "9.7.4");
+      url.searchParams.set("_appv", "9.7.11");
       url.searchParams.set("_ts", Date.now().toString());
       window.location.replace(url.toString());
     }, 250);
