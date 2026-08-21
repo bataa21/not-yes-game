@@ -1,4 +1,4 @@
-const CACHE_NAME = "mon-bish-v9-7-13-control-spacing";
+const CACHE_NAME = "mon-bish-v9-7-14-control-spacing-fix";
 
 const CORE = [
   "./",
