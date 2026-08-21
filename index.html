@@ -2142,6 +2142,31 @@ body.pre-game .install-control.install-visible {
   .title-sound-toggle { width: 32px; min-width: 32px; height: 32px; padding: 0; font-size: 16px; }
 }
 
+
+/* =========================================================
+   V9.7.13 — CONTROL SPACING POLISH
+   Add breathing room between MN/EN, Settings and Help only.
+   ========================================================= */
+@media (max-width: 600px) {
+  #lang-toggle {
+    margin-right: 8px !important;
+  }
+
+  #settings-button {
+    margin-right: 8px !important;
+  }
+}
+
+@media (min-width: 601px) {
+  #lang-toggle {
+    margin-right: 10px !important;
+  }
+
+  #settings-button {
+    margin-right: 10px !important;
+  }
+}
+
 </style>
 </head>
 
@@ -4853,7 +4878,7 @@ function clearStatisticsAndRecords() {
 
     <div class="settings-section app-version-section">
       <div class="app-version-name" id="app-version-name">Мөн Биш</div>
-      <div class="app-version-number">App Version 9.7.12</div>
+      <div class="app-version-number">App Version 9.7.13</div>
     </div>
 
     <div class="settings-section">
@@ -5054,7 +5079,7 @@ function closePracticeComplete() {
     // keep showing the old cached index.html.
     setTimeout(() => {
       const url = new URL(window.location.href);
-      url.searchParams.set("_appv", "9.7.12");
+      url.searchParams.set("_appv", "9.7.13");
       url.searchParams.set("_ts", Date.now().toString());
       window.location.replace(url.toString());
     }, 250);
