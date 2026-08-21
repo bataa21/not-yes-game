@@ -1,4 +1,4 @@
-const CACHE_NAME = "mon-bish-v9-7-11-language-browser-polish";
+const CACHE_NAME = "mon-bish-v9-7-12-title-sound";
 
 const CORE = [
   "./",
