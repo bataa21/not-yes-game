@@ -2177,11 +2177,46 @@ body.pre-game .install-control.install-visible {
   }
 }
 
+
+/* V9.7.15 — FIRST LAUNCH LANGUAGE CHOICE */
+#first-language-overlay {
+  position: fixed; inset: 0; z-index: 20000;
+  display: none; align-items: center; justify-content: center;
+  padding: 20px; background: rgba(20,25,35,.34);
+}
+#first-language-overlay.show { display: flex; }
+.first-language-card {
+  width: min(390px, 92vw); background: #fff; border-radius: 22px;
+  padding: 28px 22px 24px; box-shadow: 0 18px 55px rgba(0,0,0,.24);
+  text-align: center;
+}
+.first-language-card h2 { margin: 0 0 8px; font-size: 30px; }
+.first-language-card p { margin: 0 0 22px; color: #555; font-size: 16px; line-height: 1.35; }
+.first-language-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.first-language-actions button {
+  min-height: 54px; padding: 10px 12px; border: 1px solid #d9deea;
+  border-radius: 14px; background: #f7f8fc; color: #252a35;
+  font-size: 17px; font-weight: 800; cursor: pointer;
+}
+.first-language-actions button:active { transform: scale(.98); }
+
 </style>
 </head>
 
 
 <body>
+
+<div id="first-language-overlay" role="dialog" aria-modal="true" aria-labelledby="first-language-title">
+  <div class="first-language-card">
+    <h2 id="first-language-title">Мөн Биш</h2>
+    <p>Хэлээ сонгоно уу<br><span lang="en">Choose your language</span></p>
+    <div class="first-language-actions">
+      <button type="button" onclick="chooseFirstLanguage('mn')">🇲🇳 Монгол</button>
+      <button type="button" onclick="chooseFirstLanguage('en')">🇬🇧 English</button>
+    </div>
+  </div>
+</div>
+
 
 <div class="app-shell">
 
@@ -4888,7 +4923,7 @@ function clearStatisticsAndRecords() {
 
     <div class="settings-section app-version-section">
       <div class="app-version-name" id="app-version-name">Мөн Биш</div>
-      <div class="app-version-number">App Version 9.7.14</div>
+      <div class="app-version-number">App Version 9.7.15</div>
     </div>
 
     <div class="settings-section">
@@ -5089,7 +5124,7 @@ function closePracticeComplete() {
     // keep showing the old cached index.html.
     setTimeout(() => {
       const url = new URL(window.location.href);
-      url.searchParams.set("_appv", "9.7.14");
+      url.searchParams.set("_appv", "9.7.15");
       url.searchParams.set("_ts", Date.now().toString());
       window.location.replace(url.toString());
     }, 250);
@@ -5155,6 +5190,36 @@ function closePracticeComplete() {
     history.replaceState(null, "", url.pathname + url.search + url.hash);
   }
 })();
+</script>
+
+
+<script>
+/* V9.7.15 — First Launch Language Choice */
+function chooseFirstLanguage(language) {
+  if (language !== "mn" && language !== "en") return;
+  localStorage.setItem("monbishLanguage", language);
+  localStorage.setItem("monbishLanguageChosen", "1");
+  currentLanguage = language;
+  applyLanguage();
+  const overlay = document.getElementById("first-language-overlay");
+  if (overlay) overlay.classList.remove("show");
+}
+
+function initializeFirstLaunchLanguageChoice() {
+  const savedLanguage = localStorage.getItem("monbishLanguage");
+  const alreadyChosen = localStorage.getItem("monbishLanguageChosen") === "1";
+
+  // Existing users already have a saved language: migrate silently.
+  if (savedLanguage === "mn" || savedLanguage === "en") {
+    if (!alreadyChosen) localStorage.setItem("monbishLanguageChosen", "1");
+    return;
+  }
+
+  const overlay = document.getElementById("first-language-overlay");
+  if (overlay) overlay.classList.add("show");
+}
+
+window.addEventListener("DOMContentLoaded", initializeFirstLaunchLanguageChoice);
 </script>
 
 </body>
