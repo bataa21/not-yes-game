@@ -1,4 +1,4 @@
-const CACHE_NAME = "mon-bish-v9-7-16-explicit-scope";
+const CACHE_NAME = "mon-bish-v9-7-16-first-language-choice";
 
 const CORE = [
   "./",
